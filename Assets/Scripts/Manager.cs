@@ -75,4 +75,10 @@ public class Manager {
 		}
 	}
 
+	//
+	public static Vector3 GetRandomRootDirection () { 
+		Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0f), 0f);
+		return direction.normalized;
+	}
+
 }

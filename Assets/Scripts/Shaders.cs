@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Shaders : MonoBehaviour {
 
-	public float worldSpeed = 0.05f;
+	public static float worldSpeed = 0.05f;
 	public float minLight = 0.5f;
 
 	private Game game;

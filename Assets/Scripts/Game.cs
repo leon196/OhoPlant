@@ -13,7 +13,7 @@ public class Game : MonoBehaviour {
 	private Color[] clear;
 	private int dimension = 128;
 	private float waterLastTime = 0f;
-	private float waterTimeDelay = 0.2f;
+	private float waterTimeDelay = 0.1f;
 
 	// Use this for initialization
 	void Start () {
