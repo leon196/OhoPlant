@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Plant : MonoBehaviour 
 {
 	private Texture2D plantMap;
-	private int dimension = 256;
+	private int dimension = 32;
 	private Color[] clear;
 
 	private float energy;
@@ -17,6 +17,7 @@ public class Plant : MonoBehaviour
 	{
 		// Plant Texture
 		plantMap = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
+		plantMap.filterMode = FilterMode.Point;
 
 		// Clear
 		clear = new Color[dimension*dimension];
