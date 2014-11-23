@@ -10,15 +10,17 @@ public class Water : MonoBehaviour
 	private Color[] clear;
 	private int dimension = 256;
 	private float waterLastTime = 0f;
-	private float waterTimeDelay = 0.2f;
+	private float waterTimeDelay = 0.01f;
 
 	private Controls controls;
 	private Shaders shaders;
+	private Plant plant;
 
 	void Start ()
 	{
 		controls = GetComponent<Controls>();	
 		shaders = GetComponent<Shaders>();
+		plant = GetComponent<Plant>();
 
 		water = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
 		water.filterMode = FilterMode.Point;
@@ -41,7 +43,7 @@ public class Water : MonoBehaviour
 		water.SetPixels(0, 0, dimension, dimension, clear);
 
 		// Spawn
-		if (controls.GetCloudDirection().y > 0.5) {
+		if (controls.GetCloudDirection().y > 0f) {
 			
 			Vector3 cloudPosition = controls.GetCloudDirection() * shaders.CloudDistance * dimension;
 
@@ -49,18 +51,19 @@ public class Water : MonoBehaviour
 			cloudPosition.x = Mathf.Max(0f, Mathf.Min(dimension, cloudPosition.x + dimension / 2f));
 			cloudPosition.y = Mathf.Max(0f, Mathf.Min(dimension, cloudPosition.y + dimension / 2f));
 
-			int count = 4 + (int)Random.Range(0f, 8f);
+			int count = (int)(shaders.CloudRadius * dimension);
 			if (waterLastTime + waterTimeDelay < Time.time) {
 				waterLastTime = Time.time;
 				for (int i = 0; i < count; ++i) {
 					Vector3 position = new Vector3();
 					float ratio = i / (float)count;
-					position.x = cloudPosition.x + i - count / 2;
-					position.y = cloudPosition.y;
+					position.x = cloudPosition.x + i * 2 - count + 1;// / 2;
+					position.y = cloudPosition.y;// + Random.Range(-2, 2);
+					// - ((Mathf.Sin(ratio * Mathf.PI)) / 2f) * shaders.CloudRadius * dimension * 2;
 					water.SetPixel((int)position.x, (int)position.y, Color.blue);
 
 					Droplet droplet;
-					float speed = 10f;
+					float speed = 50f;
 					if (recycle.Count > 0) {
 						int index = recycle[0];
 					 	droplet = new Droplet(index, speed, position);
@@ -78,20 +81,24 @@ public class Water : MonoBehaviour
 		for (int i = 0; i < droplets.Count; ++i) 
 		{
 			// 
-			Droplet droplet = droplets[i];
-			if (droplet != null) 
+			if (droplets[i] != null) 
 			{
-				// Out of screen
-				if (droplet.position.y > dimension || droplet.position.y < 0) 
+				// Move
+				droplets[i].ApplyGravity();
+				Vector3 position = droplets[i].position;
+
+				bool collision = plant.IsBranchAt((int)position.x, (int)position.y);
+
+				// Clear
+				if (collision || position.y > dimension || position.y < 0)
 				{
 					droplets[i] = null;
 					recycle.Add(i);
 				} 
+				// Draw
 				else 
 				{
-					water.SetPixel((int)droplet.position.x, (int)droplet.position.y, Color.blue);
-					
-					droplets[i].ApplyGravity();
+					water.SetPixel((int)position.x, (int)position.y, Color.blue);
 				}
 			}
 		}

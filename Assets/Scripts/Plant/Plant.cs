@@ -10,6 +10,11 @@ public class Plant : MonoBehaviour
 	private List<Branch> branches;
 	private List<Root> roots;
 
+	private Texture2D textureBranches;
+	private Texture2D textureRoots;
+	private int dimension = 256;
+	private Color[] clear;
+
 	void Start () 
 	{
 		energy = 0f;
@@ -20,6 +25,22 @@ public class Plant : MonoBehaviour
 
 		branches = new List<Branch>();
 		branches.Add(new Branch(Vector3.zero));
+
+		textureBranches = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
+		textureBranches.filterMode = FilterMode.Point;
+
+		textureRoots = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
+		textureRoots.filterMode = FilterMode.Point;
+
+		clear = new Color[dimension*dimension];
+		for (int i = 0; i < dimension*dimension; ++i) clear[i] = Color.clear;
+		textureBranches.SetPixels(0, 0, dimension, dimension, clear);
+		textureBranches.Apply();
+		textureRoots.SetPixels(0, 0, dimension, dimension, clear);
+		textureRoots.Apply();
+
+		Manager.Instance.Environment.renderer.material.SetTexture("_TextureBranches", textureBranches);
+		Manager.Instance.Environment.renderer.material.SetTexture("_TextureRoots", textureRoots);
 	}
 	
 	void Update () 
@@ -34,8 +55,18 @@ public class Plant : MonoBehaviour
 			Branch branch = branches[b];
 			branch.Grow();
 
-			Vector3 position = branch.CurrentPosition;
-			Manager.Instance.SetScreenBounds(position);
+			Vector3 position = branch.position;
+			position.x = Mathf.Max(0f, Mathf.Min(dimension, position.x + dimension / 2f));
+			position.y = Mathf.Max(0f, Mathf.Min(dimension, position.y + dimension / 2f));
+			textureBranches.SetPixel((int)position.x, (int)position.y, Color.green);
+			//Manager.Instance.SetScreenBounds(position);
 		}
+
+		textureBranches.Apply();
+	}
+
+	public bool IsBranchAt (int x, int y)
+	{
+		return textureBranches.GetPixel(x, y).g > 0f;
 	}
 }

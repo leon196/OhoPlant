@@ -21,13 +21,13 @@ public class Branch
 	public Branch (Vector3 position_) 
 	{
 		position = position_;
-		direction = Manager.GetRandomRootDirection();
+		direction = Manager.GetRandomBranchDirection();
 		torsade = new Vector3();
 
 		children = new List<Branch>();
 
+/*
 		gameObject = new GameObject("Branch");
-
 		line = gameObject.AddComponent<LineRenderer>();
 		line.material = Manager.Instance.MaterialBranch;
 		line.material.shader = Shader.Find("Custom/Branch");
@@ -35,7 +35,7 @@ public class Branch
 		line.SetWidth(startWidth, 0.1f);
 		line.SetVertexCount(2);
 		line.SetPosition(0, position);
-		line.SetPosition(1, position);
+		line.SetPosition(1, position);*/
 
 		points = new List<Vector3>();
 		points.Add(position);
@@ -50,24 +50,24 @@ public class Branch
 		torsade.x = Mathf.Cos(angleTorsade);
 		torsade.y = Mathf.Sin(angleTorsade);
 
-		position = position + (direction + torsade).normalized * Time.deltaTime * 100f;
+		position = position + (direction + torsade).normalized * Time.deltaTime * 20f;
+/*
 		points[currentPoint] = position;
-
 		float distance = Vector3.Distance(points[lastPoint], position);
 		if (distance > 1f) 
 		{
-			line.SetVertexCount(currentPoint + 2);
+			//line.SetVertexCount(currentPoint + 2);
 			points.Add(position);
 			++currentPoint;
 			++lastPoint;
 		}
+*/
+		//
+		//line.SetPosition(currentPoint, position);
 
 		//
-		line.SetPosition(currentPoint, position);
-
-		//
-		startWidth = 0.09f * Camera.main.orthographicSize;
-		line.SetWidth(startWidth, 0.1f);
+		//startWidth = 0.09f * Camera.main.orthographicSize;
+		//line.SetWidth(startWidth, 0.1f);
 	}
 
 	public Vector3 CurrentPosition {

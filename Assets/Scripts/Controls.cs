@@ -29,7 +29,7 @@ public class Controls : MonoBehaviour
 		inputSun = 1f - Input.mousePosition.x / Screen.width;
 		angleSun = inputSun * Mathf.PI * 2f;
 
-		inputMoon = Input.mousePosition.y / Screen.height;
+		inputMoon = Input.mousePosition.x / Screen.width;
 		angleMoon = inputMoon * Mathf.PI * 2f;
 
 		inputCloud = 1f - Input.mousePosition.y / Screen.height;
