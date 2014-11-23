@@ -7,14 +7,9 @@ public class Branch
 	//
 	public Vector3 position;
 	public Vector3 direction;
-	public List<Branch> children;
-	// 
-	private GameObject gameObject;
-	private LineRenderer line;
+	public float distance;
 	private List<Vector3> points;
-	private int currentPoint;
-	private int lastPoint;
-	private float startWidth;
+	private Vector3 lastPosition;
 	// 
 	private Vector3 torsade;
 
@@ -23,24 +18,13 @@ public class Branch
 		position = position_;
 		direction = Manager.GetRandomBranchDirection();
 		torsade = new Vector3();
-
-		children = new List<Branch>();
-/*
-		gameObject = new GameObject("Branch");
-		line = gameObject.AddComponent<LineRenderer>();
-		line.material = Manager.Instance.MaterialBranch;
-		line.material.shader = Shader.Find("Custom/Branch");
-		startWidth = 0.2f;
-		line.SetWidth(startWidth, 0.1f);
-		line.SetVertexCount(2);
-		line.SetPosition(0, position);
-		line.SetPosition(1, position);*/
+		distance = 0f;
 
 		points = new List<Vector3>();
 		points.Add(position);
 		points.Add(position);
-		lastPoint = 0;
-		currentPoint = 1;
+
+		lastPosition = position;
 	}
 	
 	public void Grow () 
@@ -49,31 +33,12 @@ public class Branch
 		torsade.x = Mathf.Cos(angleTorsade);
 		torsade.y = Mathf.Sin(angleTorsade);
 
-		//direction = Manager.Instance.GetSunDirection();
-
 		position = position + (direction + Manager.Instance.GetSunDirection() + torsade).normalized;
-/*
-		points[currentPoint] = position;
-		float distance = Vector3.Distance(points[lastPoint], position);
-		if (distance > 1f) 
+
+		if ((int)position.x != (int)lastPosition.x || (int)position.y != (int)lastPosition.y) 
 		{
-			//line.SetVertexCount(currentPoint + 2);
 			points.Add(position);
-			++currentPoint;
-			++lastPoint;
-		}
-*/
-		//
-		//line.SetPosition(currentPoint, position);
-
-		//
-		//startWidth = 0.09f * Camera.main.orthographicSize;
-		//line.SetWidth(startWidth, 0.1f);
-	}
-
-	public Vector3 CurrentPosition {
-		get {
-			return points[currentPoint];
+			++distance;
 		}
 	}
 

@@ -15,10 +15,12 @@ public class Controls : MonoBehaviour
 
 	//
 	private Game game;
+	private Shaders shaders;
 
 	void Start () 
 	{
 		game = GetComponent<Game>();
+		shaders = GetComponent<Shaders>();
 	}
 	
 	void Update () 
@@ -29,11 +31,12 @@ public class Controls : MonoBehaviour
 			inputMoon = 1f - Arduino.Manager.Spiner(1);
 			inputCloud = 1f - Arduino.Manager.Spiner(2);
 
-			game.worldSpeed = 0.01f + Arduino.Manager.Slider(1);
+			game.worldSpeed = 0.05f + 0.1f * Arduino.Manager.Slider(1);
+			renderer.material.SetFloat("_Details", 4f + (1f - Arduino.Manager.Slider(2)) * 4f);
 
 		} else {
 			inputSun = 1f - Input.mousePosition.x / Screen.width;
-			inputMoon = Input.mousePosition.x / Screen.width;
+			inputMoon = 1f - Input.mousePosition.x / Screen.width;
 			inputCloud = 1f - Input.mousePosition.y / Screen.height;
 		}
 

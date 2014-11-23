@@ -23,11 +23,11 @@ public class Root {
 	
 	public void Grow () 
 	{
-		float angleTorsade = Mathf.PI * Mathf.Cos(Time.time * 10f) * 0.5f;
+		float angleTorsade = Mathf.PI * Mathf.Cos(Time.time * 5f) ;
 		torsade.x = Mathf.Cos(angleTorsade);
 		torsade.y = Mathf.Sin(angleTorsade);
 
-		position = position + (direction + torsade + Manager.Instance.GetMoonDirection()).normalized;
+		position = position + (direction + torsade).normalized;
 	}
 
 	public void GrowWithDelay (float delay)

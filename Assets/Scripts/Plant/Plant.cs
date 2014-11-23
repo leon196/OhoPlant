@@ -72,13 +72,19 @@ public class Plant : MonoBehaviour
 			for (int b = 0; b < branches.Count; ++b) 
 			{
 				Branch branch = branches[b];
-				branch.Grow();
 
-				Vector3 position = branch.position;
-				position.x = Mathf.Max(0f, Mathf.Min(dimension, position.x + dimension / 2f));
-				position.y = Mathf.Max(0f, Mathf.Min(dimension, position.y + dimension / 2f));
-				textureBranches.SetPixel((int)position.x, (int)position.y, Color.green);
-				//Manager.Instance.SetScreenBounds(position);
+				if (branch.distance < 10f) 
+				{
+					branch.Grow();
+
+					Vector3 position = branch.position;
+					position.x = Mathf.Max(0f, Mathf.Min(dimension, position.x + dimension / 2f));
+					position.y = Mathf.Max(0f, Mathf.Min(dimension, position.y + dimension / 2f));
+					textureBranches.SetPixel((int)position.x, (int)position.y, Color.green);	
+				} 
+				/*else {
+					branches.Add(new Branch(branch.position));
+				}*/
 			}
 
 			textureRoots.Apply();
