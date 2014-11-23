@@ -12,6 +12,6 @@ public class Droplet {
 	}
 
 	public void ApplyGravity () {
-		position.y = (position.y + Time.deltaTime * speed);
+		position.y = (position.y - Time.deltaTime * speed);
 	}
 }

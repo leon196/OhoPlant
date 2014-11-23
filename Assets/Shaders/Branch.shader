@@ -24,6 +24,7 @@
         uniform float WorldTime;
         uniform float WorldSpeed;
         uniform float WorldLight;
+        uniform float WorldDetails;
         uniform float4 MoonDirection;
 
         float rand(float2 co){
@@ -42,12 +43,13 @@
         void surf (Input IN, inout SurfaceOutput o) 
         {
         	// Level of Details
-        	float details = pow(2, floor(_Details));
+        	float details = floor(WorldDetails);//pow(2, floor(_Details));
             
             // Screen UVs
             float2 screenUV = IN.screenPos.xy / IN.screenPos.w;
-            screenUV.y *= _ScreenParams.y / _ScreenParams.x;
+            screenUV.x *= _ScreenParams.x / _ScreenParams.y;
         	screenUV = pixelize(screenUV.xy, details);
+        	screenUV.x = 1.0 - screenUV.x;
 
         	// Mesh UVs
         	//float2 uv = pixelize(IN.uv_MainTex.xy, details);

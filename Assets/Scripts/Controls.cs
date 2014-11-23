@@ -1,74 +1,74 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Controls : MonoBehaviour {
+public class Controls : MonoBehaviour 
+{
+	// Sun
+	private float inputSun;
+	private float angleSun;
 
-	private GameObject sun;
-	private GameObject moon;
-	private GameObject cloud;
-
-	// Sun & Moon
-	private float inputSunMoon;
-	private float angleSunMoon;
-	private float radiusSunMoon;
+	// Moon
+	private float inputMoon;
+	private float angleMoon;
 
 	// Cloud
 	private float inputCloud;
 	private float angleCloud;
-	private float radiusCloud;
 
-	// Use this for initialization
-	void Start () {
-		sun = Manager.Instance.Sun;
-		moon = Manager.Instance.Moon;
-		cloud = Manager.Instance.Cloud;
+	void Start () 
+	{
+		inputSun = 0f;
+		angleSun = 0f;
+
+		inputCloud = 0f;
+		angleCloud = 0f;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		inputSunMoon = 1f - Input.mousePosition.x / Screen.width;
-		angleSunMoon = inputSunMoon * Mathf.PI * 2f;
-		radiusSunMoon = 5f;
+	void Update () 
+	{
+		inputSun = 1f - Input.mousePosition.x / Screen.width;
+		angleSun = inputSun * Mathf.PI * 2f;
 
-		sun.transform.localPosition = GetSunDirection() * radiusSunMoon;
-		moon.transform.localPosition = GetMoonDirection() * radiusSunMoon;
+		inputMoon = Input.mousePosition.y / Screen.height;
+		angleMoon = inputMoon * Mathf.PI * 2f;
 
 		inputCloud = 1f - Input.mousePosition.y / Screen.height;
 		angleCloud = inputCloud * Mathf.PI * 2f;
-		radiusCloud = 3f;
-
-		cloud.transform.localPosition = GetCloudDirection() * radiusCloud;
 	}
 
-	public float GetInput1Ratio () {
-		return inputSunMoon;
+	public float GetSunRatio () {
+		return inputSun;
 	}
 
 	public float GetSunAngle () {
-		return angleSunMoon;
+		return angleSun;
 	}
 
+	// Directions
+
 	public Vector3 GetSunDirection () {
-		return new Vector3(Mathf.Cos(angleSunMoon), Mathf.Sin(angleSunMoon), 0f);
+		return new Vector3(Mathf.Cos(angleSun), Mathf.Sin(angleSun), 0f);
 	}
 
 	public Vector3 GetMoonDirection () {
-		return new Vector3(Mathf.Cos(angleSunMoon + Mathf.PI), Mathf.Sin(angleSunMoon + Mathf.PI), 0f);
+		return new Vector3(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon), 0f);
 	}
 
-	// Shaders
-	public Vector4 GetMoonDirectionVec4 () {
-		return new Vector4(Mathf.Cos(angleSunMoon + Mathf.PI), Mathf.Sin(angleSunMoon + Mathf.PI), 0f, 0f);
-	}
-
-	// CLOUD
 	public Vector3 GetCloudDirection () {
 		return new Vector3(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud), 1f);
 	}
-	public Vector3 GetCloudPosition () {
-		return new Vector3(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud), 1f) * radiusCloud;
+
+	// Shaders
+
+	public Vector4 GetSunDirectionVec4 () {
+		return new Vector4(Mathf.Cos(angleSun), Mathf.Sin(angleSun), 0f, 0f);
 	}
-	public float GetCloudRadius () {
-		return cloud.renderer.material.GetFloat("_Radius") * cloud.transform.localScale.x;
+
+	public Vector4 GetMoonDirectionVec4 () {
+		return new Vector4(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon), 0f, 0f);
+	}
+
+	public Vector4 GetCloudDirectionVec4() {
+		return new Vector4(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud), 0f, 0f);
 	}
 }

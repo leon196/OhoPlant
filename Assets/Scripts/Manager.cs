@@ -30,30 +30,12 @@ public class Manager {
 		}
 	}
 
-	// Sun
-	private GameObject _sun = null;
-	public GameObject Sun { 
+	// Environment
+	private GameObject _environment = null;
+	public GameObject Environment { 
 		get {
-			if (_sun == null) _sun = GameObject.Find("Sun");
-			return _sun;
-		}
-	}
-
-	// Moon
-	private GameObject _moon = null;
-	public GameObject Moon { 
-		get {
-			if (_moon == null) _moon = GameObject.Find("Moon");
-			return _moon;
-		}
-	}
-
-	// Cloud
-	private GameObject _cloud = null;
-	public GameObject Cloud { 
-		get {
-			if (_cloud == null) _cloud = GameObject.Find("Cloud");
-			return _cloud;
+			if (_environment == null) _environment = GameObject.Find("Environment");
+			return _environment;
 		}
 	}
 
@@ -75,10 +57,37 @@ public class Manager {
 		}
 	}
 
-	//
+	// Random Root Direction
 	public static Vector3 GetRandomRootDirection () { 
 		Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0f), 0f);
 		return direction.normalized;
+	}
+
+	// Material Branch
+	private Material _materialBranch = null;
+	public Material MaterialBranch {
+		get {
+			if (_materialBranch == null) _materialBranch = Resources.Load("MaterialBranch") as Material;
+			return _materialBranch;
+		}
+	}
+
+	// SetScreenBounds
+	public void SetScreenBounds (Vector3 position) 
+	{
+		float size = Mathf.Max(Mathf.Abs(position.x), Mathf.Abs(position.y));
+		
+		if (Camera.main.orthographicSize < size) 
+		{
+			SetSizeBounds(size);
+		}
+	}
+
+	public void SetSizeBounds (float size)
+	{
+		Camera.main.orthographicSize = size;	
+		Shader.SetGlobalFloat("WorldDetails", size);
+		Environment.transform.localScale = new Vector3(size * 4f, size * 4f, size * 4f);
 	}
 
 }
