@@ -48,20 +48,24 @@ public class Manager {
 		}
 	}
 
+	public Vector3 GetSunDirection () {
+		return Controls.GetSunDirection();
+	}
+
+	public Vector3 GetMoonDirection () {
+		return Controls.GetMoonDirection();
+	}
+
 	// Random Branch Direction
 	public static Vector3 GetRandomBranchDirection () { 
-		Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(0f, 1f), 0f);
+		Vector3 direction = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0.5f, 1f), 0f);
 		return direction.normalized;
 	}
 
 	// Random Root Direction
 	public static Vector3 GetRandomRootDirection () { 
-		Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0f), 0f);
+		Vector3 direction = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-1f, -0.5f), 0f);
 		return direction.normalized;
-	}
-
-	public static Vector3 GetMoonDirection () {
-		return Manager.Instance.Controls.GetMoonDirection();
 	}
 
 	// Material Branch

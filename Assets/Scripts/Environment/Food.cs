@@ -6,6 +6,7 @@ public class Food {
 	public Vector3 position;
 	public Color[] shape;
 	public int dimension;
+	public int amount;
 
 	public Food (int index_, float speed_, Vector3 position_) {
 		index = index_;
@@ -13,8 +14,16 @@ public class Food {
 		position = position_;
 		dimension = 3;
 		shape = new Color[dimension*dimension];
+		amount = 0;
 		for (int i = 0; i < dimension*dimension; ++i) {
-			shape[i] = Random.Range(0f, 1f) > 0.5f ? Color.red : Color.clear;
+			Color color;
+			if (Random.Range(0f, 1f) > 0.5f) {
+				color = Color.red;
+				++amount;
+			} else {
+				color = Color.clear;
+			}
+			shape[i] = color;
 		}
 	}
 
@@ -22,7 +31,7 @@ public class Food {
 	{
 		//bool ground = position.y < 128;
 		//float gravity = Time.deltaTime * speed * (ground ? 0.1f : 1f);
-		position += Manager.GetMoonDirection() * speed * speedGlobal;
+		position += Manager.Instance.GetMoonDirection() * speed * speedGlobal;
 		if (position.x < 0f) {
 			position.x = 255f;
 		} else if (position.x > 255f) {

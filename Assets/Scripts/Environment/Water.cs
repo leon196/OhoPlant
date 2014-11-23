@@ -10,7 +10,7 @@ public class Water : MonoBehaviour
 	private Color[] clear;
 	private int dimension = 256;
 	private float waterLastTime = 0f;
-	private float waterTimeDelay = 0.05f;
+	private float waterTimeDelay = 0.01f;
 
 	private Game game;
 	private Controls controls;
@@ -47,20 +47,22 @@ public class Water : MonoBehaviour
 		// Spawn
 		if (controls.GetCloudDirection().y > 0f) {
 			
-			Vector3 cloudPosition = controls.GetCloudDirection() * shaders.CloudDistance * dimension;
+
+            float textureDetails = Mathf.Pow(2f, 8f - Mathf.Floor(shaders.levelOfDetails));
+			Vector3 cloudPosition = controls.GetCloudDirection() * shaders.CloudDistance * dimension / textureDetails;
 
 			// From world to texture
 			cloudPosition.x = Mathf.Max(0f, Mathf.Min(dimension, cloudPosition.x + dimension / 2f));
 			cloudPosition.y = Mathf.Max(0f, Mathf.Min(dimension, cloudPosition.y + dimension / 2f));
 
-			int count = (int)(shaders.CloudRadius * dimension);
+			int count = (int)(shaders.CloudRadius * dimension / (2 * textureDetails));
 			if (waterLastTime + waterTimeDelay < Time.time) {
 				waterLastTime = Time.time;
 				for (int i = 0; i < count; ++i) {
 					Vector3 position = new Vector3();
 					float ratio = i / (float)count;
-					position.x = cloudPosition.x + i - count / 2 + 1;
-					position.y = cloudPosition.y + Random.Range(-1, 1);//- Mathf.Floor(i / 4f) - (i % 4);// + Random.Range(-2, 2);
+					position.x = cloudPosition.x + i * 2 - count + 1;
+					position.y = cloudPosition.y + Random.Range(-1, 1) - count * 2;//- Mathf.Floor(i / 4f) - (i % 4);// + Random.Range(-2, 2);
 					// - ((Mathf.Sin(ratio * Mathf.PI)) / 2f) * shaders.CloudRadius * dimension * 2;
 
 					if (!IsWaterAt((int)position.x, (int)position.y)) {
@@ -91,8 +93,9 @@ public class Water : MonoBehaviour
 				// Move
 				droplets[i].ApplyGravity(game.worldSpeed);
 				Vector3 position = droplets[i].position;
-
-				bool collision = plant.IsBranchAt((int)position.x, (int)position.y);
+				int x = (int)position.x;
+				int y = (int)position.y;
+				bool collision = plant.IsBranchAt(x, y) || plant.IsRootAt(x, y);
 				bool outOfGround = position.y >= dimension || position.y < 0 || position.x < 0 || position.x >= dimension;
 
 				// Clear
@@ -104,7 +107,7 @@ public class Water : MonoBehaviour
 				// Draw
 				else 
 				{
-					water.SetPixel((int)position.x, (int)position.y, Color.blue);
+					water.SetPixel(x, y, Color.blue);
 				}
 			}
 		}

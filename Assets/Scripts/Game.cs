@@ -15,8 +15,12 @@ public class Game : MonoBehaviour
 		
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void Update () 
+	{
+		if (Arduino.Manager.detected) 
+		{
+			Arduino.Manager.Update();
+		}
 	}
 
 	public float GetGlobalLight () {

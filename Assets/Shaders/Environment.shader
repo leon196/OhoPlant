@@ -1,5 +1,9 @@
 ﻿Shader "Custom/Environment" {
     Properties {
+
+        _Details ("Details", Range (4.0, 8.0)) = 4.0
+        _Shades ("Shades", Range (0.0, 1.0)) = 0.2
+
         _ColorBranches ("Branches Color", Color) = (1,1,1,1)
         _TextureBranches ("Branches", 2D) = "white" {}
         _ColorRoots ("Roots Color", Color) = (1,1,1,1)
@@ -11,24 +15,21 @@
 
         _ColorSunInner ("Sun Inner", Color) = (1,1,1,1)
         _ColorSunOutter ("Sun Outter", Color) = (1,1,1,1)
-        _SunDistance ("Distance", Range (0.0, 0.5)) = 0.2
-        _SunRadius ("Radius", Range (0.01, 0.1)) = 0.1
+        _SunDistance ("Sun Distance", Range (0.0, 0.5)) = 0.2
+        _SunRadius ("Sun Radius", Range (0.01, 0.1)) = 0.1
 
         _ColorMoonInner ("Moon Inner", Color) = (1,1,1,1)
         _ColorMoonOutter ("Moon Outter", Color) = (1,1,1,1)
-        _MoonDistance ("Distance", Range (0.0, 0.5)) = 0.2
-        _MoonRadius ("Radius", Range (0.01, 0.1)) = 0.1
+        _MoonDistance ("Moon Distance", Range (0.0, 0.5)) = 0.2
+        _MoonRadius ("Moon Radius", Range (0.01, 0.1)) = 0.1
 
         _ColorCloud ("Cloud", Color) = (1,1,1,1)
-        _CloudDistance ("Distance", Range (0.0, 0.5)) = 0.2
-        _CloudRadius ("Radius", Range (0.01, 0.1)) = 0.1
+        _CloudDistance ("Cloud Distance", Range (0.0, 0.5)) = 0.2
+        _CloudRadius ("Cloud Radius", Range (0.01, 0.1)) = 0.1
 
         _ColorSky ("Sky", Color) = (1,1,1,1)
         _ColorGround ("Ground", Color) = (1,1,1,1)
         _ColorGrass ("Grass", Color) = (1,1,1,1)
-
-        _Shades ("Shades", Range (0.0, 1.0)) = 0.2
-        _Details ("Details", Range (4.0, 8.0)) = 4.0
     }
     SubShader {
 	   	Tags { "Queue"="Transparent" "IgnoreProjector"="True" }
@@ -113,7 +114,7 @@
 
             // Ground position
             float slice = 1.0 / details;
-            float currentY = 1.0 - screenUV.y - 0.5;
+            float currentY = 1.0 - screenUV.y - 0.5 + slice * 6.0;
             currentY = clamp(currentY, 0.0, 1.0);
 
             // Sky
@@ -157,6 +158,7 @@
 
             // Plant
             float4 branches = tex2D(_TextureBranches, textureUV);
+            float4 roots = tex2D(_TextureRoots, textureUV);
 
             // Water
             float shadeWater = rand(uv.xx) * 0.4;
@@ -169,8 +171,8 @@
             float3 layerSky = lerp(lerp(lerp(sky, sun, sunAlpha), moon, moonAlpha), cloud, cloudAlpha);
             float3 layerGround = lerp(_ColorGround * shadeGround, _ColorGrass * shadeGrass, grass);
             float3 layerEnvironment = lerp(lerp(layerGround, layerSky, ground), _ColorFood * shadeGround, food.r);
-            float3 layerBranches = lerp(layerEnvironment, _ColorBranches * shade, branches.g);
-            float3 layerWater = lerp(layerBranches, _ColorWater + shadeWater, water.b);
+            float3 layerPlant = lerp(lerp(layerEnvironment, _ColorBranches * shade, branches.g), _ColorRoots * shade, roots.g);
+            float3 layerWater = lerp(layerPlant, _ColorWater + shadeWater, water.b);
 
             o.Emission = layerWater;
             o.Alpha = 1.0;

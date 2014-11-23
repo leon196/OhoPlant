@@ -45,11 +45,13 @@ public class Branch
 	
 	public void Grow () 
 	{
-		float angleTorsade = Mathf.PI * Mathf.Cos(Time.time * 10f) * 0.2f + Mathf.PI * Mathf.Cos(Time.time * 5f) * 0.6f;
+		float angleTorsade = Mathf.PI * Mathf.Cos(Time.time * 10f);
 		torsade.x = Mathf.Cos(angleTorsade);
 		torsade.y = Mathf.Sin(angleTorsade);
 
-		position = position + (direction + torsade).normalized * Time.deltaTime * 20f;
+		//direction = Manager.Instance.GetSunDirection();
+
+		position = position + (direction + Manager.Instance.GetSunDirection() + torsade).normalized;
 /*
 		points[currentPoint] = position;
 		float distance = Vector3.Distance(points[lastPoint], position);

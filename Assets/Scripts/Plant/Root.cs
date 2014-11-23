@@ -12,9 +12,9 @@ public class Root {
 	// 
 	private Vector3 torsade;
 
-	public Root () 
+	public Root (Vector3 position_) 
 	{
-		position = new Vector3();
+		position = position_;
 		direction = Manager.GetRandomRootDirection();
 		torsade = new Vector3();
 
@@ -23,11 +23,11 @@ public class Root {
 	
 	public void Grow () 
 	{
-		float angleTorsade = Mathf.PI * Mathf.Cos(Time.time * 10f) * 0.2f + Mathf.PI * Mathf.Cos(Time.time * 5f) * 0.6f;
+		float angleTorsade = Mathf.PI * Mathf.Cos(Time.time * 10f) * 0.5f;
 		torsade.x = Mathf.Cos(angleTorsade);
 		torsade.y = Mathf.Sin(angleTorsade);
 
-		position = position + (direction + torsade).normalized * Time.deltaTime * 10f;
+		position = position + (direction + torsade + Manager.Instance.GetMoonDirection()).normalized;
 	}
 
 	public void GrowWithDelay (float delay)

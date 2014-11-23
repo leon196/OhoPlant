@@ -38,6 +38,9 @@ public class Feeder : MonoBehaviour
 			clear[i] = Color.clear;
 
 		foodMap.SetPixels(0, 0, dimension, dimension, clear);
+
+		foodCount = 0;
+		foodLastTime = Time.time;
 	}
 
 	void Update ()
@@ -80,12 +83,13 @@ public class Feeder : MonoBehaviour
 				foods[i].Move(game.worldSpeed);
 				Vector3 position = foods[i].position;
 
-				bool collision = plant.IsBranchAt((int)position.x, (int)position.y);
+				bool collision = plant.IsRootAt((int)position.x, (int)position.y);
 				//bool outOfGround = position.y > dimension / 2 || position.y < 0 || position.x < 0 || position.x >= dimension;
 
 				// Clear
 				if (collision)// || outOfGround)
 				{
+					plant.AddResource(foods[i].amount);
 					foods[i] = null;
 					recycle.Add(i);
 					--foodCount;

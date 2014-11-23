@@ -3,37 +3,43 @@ using System.Collections;
 
 public class Controls : MonoBehaviour 
 {
-	// Sun
-	private float inputSun;
-	private float angleSun;
+	// 
+	private float inputSun = 0f;
+	private float inputMoon = 0f;
+	private float inputCloud = 0f;
 
-	// Moon
-	private float inputMoon;
-	private float angleMoon;
+	// 
+	private float angleSun = 0f;
+	private float angleMoon = 0f;
+	private float angleCloud = 0f;
 
-	// Cloud
-	private float inputCloud;
-	private float angleCloud;
+	//
+	private Game game;
 
 	void Start () 
 	{
-		inputSun = 0f;
-		angleSun = 0f;
-
-		inputCloud = 0f;
-		angleCloud = 0f;
+		game = GetComponent<Game>();
 	}
 	
 	void Update () 
 	{
-		inputSun = 1f - Input.mousePosition.x / Screen.width;
-		angleSun = inputSun * Mathf.PI * 2f;
+		if (Arduino.Manager.Enable) 
+		{
+			inputSun = 1f - Arduino.Manager.Spiner(3);
+			inputMoon = 1f - Arduino.Manager.Spiner(1);
+			inputCloud = 1f - Arduino.Manager.Spiner(2);
 
-		inputMoon = Input.mousePosition.x / Screen.width;
-		angleMoon = inputMoon * Mathf.PI * 2f;
+			game.worldSpeed = 0.01f + Arduino.Manager.Slider(1);
 
-		inputCloud = 1f - Input.mousePosition.y / Screen.height;
-		angleCloud = inputCloud * Mathf.PI * 2f;
+		} else {
+			inputSun = 1f - Input.mousePosition.x / Screen.width;
+			inputMoon = Input.mousePosition.x / Screen.width;
+			inputCloud = 1f - Input.mousePosition.y / Screen.height;
+		}
+
+		angleSun = inputSun * Mathf.PI * 2f - Mathf.PI / 2f;
+		angleMoon = inputMoon * Mathf.PI * 2f - Mathf.PI / 2f;
+		angleCloud = inputCloud * Mathf.PI * 2f - Mathf.PI / 2f;
 	}
 
 	public float GetSunRatio () {
