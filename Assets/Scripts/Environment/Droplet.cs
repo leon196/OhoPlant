@@ -11,10 +11,10 @@ public class Droplet {
 		position = position_;
 	}
 
-	public void ApplyGravity () 
+	public void ApplyGravity (float speedGlobal) 
 	{
 		bool ground = position.y < 128;
 		float gravity = Time.deltaTime * speed * (ground ? 0.1f : 1f);
-		position += (Time.deltaTime * Manager.GetMoonDirection() * (ground ? 10f : 0f) * (Random.Range(0f, 1f) > 0.5 ? 1f : 0f) + new Vector3(0f, -gravity, 0f)).normalized;
+		position += (Time.deltaTime * Manager.GetMoonDirection() * (ground ? speedGlobal * 40f : 10f) * (Random.Range(0f, 1f) > 0.2 ? 1f : 0f) + new Vector3(0f, -gravity, 0f)).normalized;
 	}
 }

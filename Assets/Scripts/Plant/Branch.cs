@@ -25,7 +25,6 @@ public class Branch
 		torsade = new Vector3();
 
 		children = new List<Branch>();
-
 /*
 		gameObject = new GameObject("Branch");
 		line = gameObject.AddComponent<LineRenderer>();

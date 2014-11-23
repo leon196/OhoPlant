@@ -4,7 +4,7 @@ using System.Collections;
 public class Shaders : MonoBehaviour 
 {
 	//
-	public static float worldSpeed = 0.05f;
+	public int levelOfDetails = 8;
 	public float minLight = 0.5f;
 
 	//
@@ -24,18 +24,21 @@ public class Shaders : MonoBehaviour
 
 		Manager.Instance.SetSizeBounds(10f);
 
-		cloudRadius = Manager.Instance.Environment.renderer.material.GetFloat("_CloudRadius");
-		cloudDistance = Manager.Instance.Environment.renderer.material.GetFloat("_CloudDistance");
+		cloudRadius = renderer.material.GetFloat("_CloudRadius");
+		cloudDistance = renderer.material.GetFloat("_CloudDistance");
+		levelOfDetails = (int)renderer.material.GetFloat("_Details");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		Shader.SetGlobalFloat("WorldTime", Time.time);
-		Shader.SetGlobalFloat("WorldSpeed", worldSpeed);
+		Shader.SetGlobalFloat("WorldSpeed", game.worldSpeed);
 		Shader.SetGlobalFloat("WorldLight", Mathf.Max(minLight, game.GetGlobalLight()));
 
 		Shader.SetGlobalVector("SunDirection", controls.GetSunDirectionVec4());
 		Shader.SetGlobalVector("MoonDirection", controls.GetMoonDirectionVec4());
 		Shader.SetGlobalVector("CloudDirection", controls.GetCloudDirectionVec4());
+
+		//levelOfDetails = (int)renderer.material.GetFloat("_Details");
 	}
 }

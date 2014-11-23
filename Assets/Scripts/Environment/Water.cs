@@ -10,14 +10,16 @@ public class Water : MonoBehaviour
 	private Color[] clear;
 	private int dimension = 256;
 	private float waterLastTime = 0f;
-	private float waterTimeDelay = 0.01f;
+	private float waterTimeDelay = 0.05f;
 
+	private Game game;
 	private Controls controls;
 	private Shaders shaders;
 	private Plant plant;
 
 	void Start ()
 	{
+		game = GetComponent<Game>();
 		controls = GetComponent<Controls>();	
 		shaders = GetComponent<Shaders>();
 		plant = GetComponent<Plant>();
@@ -27,7 +29,7 @@ public class Water : MonoBehaviour
 		droplets = new List<Droplet>();
 		recycle = new List<int>();
 
-		Manager.Instance.Environment.renderer.material.SetTexture("_TextureWater", water);
+		renderer.material.SetTexture("_TextureWater", water);
 		
 		clear = new Color[dimension*dimension];
 		for (int i = 0; i < dimension*dimension; ++i) 
@@ -57,21 +59,24 @@ public class Water : MonoBehaviour
 				for (int i = 0; i < count; ++i) {
 					Vector3 position = new Vector3();
 					float ratio = i / (float)count;
-					position.x = cloudPosition.x + i * 2 - count + 1;// / 2;
-					position.y = cloudPosition.y;// + Random.Range(-2, 2);
+					position.x = cloudPosition.x + i - count / 2 + 1;
+					position.y = cloudPosition.y + Random.Range(-1, 1);//- Mathf.Floor(i / 4f) - (i % 4);// + Random.Range(-2, 2);
 					// - ((Mathf.Sin(ratio * Mathf.PI)) / 2f) * shaders.CloudRadius * dimension * 2;
-					water.SetPixel((int)position.x, (int)position.y, Color.blue);
 
-					Droplet droplet;
-					float speed = 50f;
-					if (recycle.Count > 0) {
-						int index = recycle[0];
-					 	droplet = new Droplet(index, speed, position);
-						droplets[index] = droplet;
-						recycle.RemoveAt(0);
-					} else {
-					 	droplet = new Droplet(droplets.Count, speed, position);
-						droplets.Add(droplet);
+					if (!IsWaterAt((int)position.x, (int)position.y)) {
+						water.SetPixel((int)position.x, (int)position.y, Color.blue);
+
+						Droplet droplet;
+						float speed = 50f;
+						if (recycle.Count > 0) {
+							int index = recycle[0];
+						 	droplet = new Droplet(index, speed, position);
+							droplets[index] = droplet;
+							recycle.RemoveAt(0);
+						} else {
+						 	droplet = new Droplet(droplets.Count, speed, position);
+							droplets.Add(droplet);
+						}
 					}
 				}
 			}
@@ -84,13 +89,14 @@ public class Water : MonoBehaviour
 			if (droplets[i] != null) 
 			{
 				// Move
-				droplets[i].ApplyGravity();
+				droplets[i].ApplyGravity(game.worldSpeed);
 				Vector3 position = droplets[i].position;
 
 				bool collision = plant.IsBranchAt((int)position.x, (int)position.y);
+				bool outOfGround = position.y >= dimension || position.y < 0 || position.x < 0 || position.x >= dimension;
 
 				// Clear
-				if (collision || position.y > dimension || position.y < 0)
+				if (collision || outOfGround)
 				{
 					droplets[i] = null;
 					recycle.Add(i);
@@ -103,5 +109,10 @@ public class Water : MonoBehaviour
 			}
 		}
 		water.Apply();
+	}
+
+	public bool IsWaterAt (int x, int y)
+	{
+		return water.GetPixel(x, y).b > 0f;
 	}
 }

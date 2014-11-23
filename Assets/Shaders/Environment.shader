@@ -1,11 +1,13 @@
 ﻿Shader "Custom/Environment" {
     Properties {
+        _ColorBranches ("Branches Color", Color) = (1,1,1,1)
         _TextureBranches ("Branches", 2D) = "white" {}
-        _ColorBranches ("Branches", Color) = (1,1,1,1)
+        _ColorRoots ("Roots Color", Color) = (1,1,1,1)
         _TextureRoots ("Roots", 2D) = "white" {}
-        _ColorRoots ("Roots", Color) = (1,1,1,1)
+        _ColorWater ("Water Color", Color) = (1,1,1,1)
         _TextureWater ("Water", 2D) = "white" {}
-        _ColorWater ("Water", Color) = (1,1,1,1)
+        _ColorFood ("Food Color", Color) = (1,1,1,1)
+        _TextureFood ("Food", 2D) = "white" {}
 
         _ColorSunInner ("Sun Inner", Color) = (1,1,1,1)
         _ColorSunOutter ("Sun Outter", Color) = (1,1,1,1)
@@ -45,6 +47,8 @@
         float4 _ColorRoots;
         sampler2D _TextureWater;
         float4 _ColorWater;
+        sampler2D _TextureFood;
+        float4 _ColorFood;
 
         float4 _ColorSunInner;
         float4 _ColorSunOutter;
@@ -155,14 +159,18 @@
             float4 branches = tex2D(_TextureBranches, textureUV);
 
             // Water
+            float shadeWater = rand(uv.xx) * 0.4;
             float4 water = tex2D(_TextureWater, textureUV);
+
+            // Food
+            float4 food = tex2D(_TextureFood, textureUV);
 
             // Apply layers
             float3 layerSky = lerp(lerp(lerp(sky, sun, sunAlpha), moon, moonAlpha), cloud, cloudAlpha);
             float3 layerGround = lerp(_ColorGround * shadeGround, _ColorGrass * shadeGrass, grass);
-            float3 layerEnvironment = lerp(layerGround, layerSky, ground);
+            float3 layerEnvironment = lerp(lerp(layerGround, layerSky, ground), _ColorFood * shadeGround, food.r);
             float3 layerBranches = lerp(layerEnvironment, _ColorBranches * shade, branches.g);
-            float3 layerWater = lerp(layerBranches, _ColorWater * shade, water.b);
+            float3 layerWater = lerp(layerBranches, _ColorWater + shadeWater, water.b);
 
             o.Emission = layerWater;
             o.Alpha = 1.0;

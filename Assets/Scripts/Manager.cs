@@ -30,15 +30,6 @@ public class Manager {
 		}
 	}
 
-	// Environment
-	private GameObject _environment = null;
-	public GameObject Environment { 
-		get {
-			if (_environment == null) _environment = GameObject.Find("Environment");
-			return _environment;
-		}
-	}
-
 	// Water
 	private GameObject _water = null;
 	public GameObject Water { 
@@ -97,7 +88,7 @@ public class Manager {
 	{
 		Camera.main.orthographicSize = size;	
 		Shader.SetGlobalFloat("WorldDetails", size);
-		Environment.transform.localScale = new Vector3(size * 4f, size * 4f, size * 4f);
+		Game.transform.localScale = new Vector3(size * 4f, size * 4f, size * 4f);
 	}
 
 }

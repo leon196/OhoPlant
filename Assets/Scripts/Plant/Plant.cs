@@ -39,8 +39,8 @@ public class Plant : MonoBehaviour
 		textureRoots.SetPixels(0, 0, dimension, dimension, clear);
 		textureRoots.Apply();
 
-		Manager.Instance.Environment.renderer.material.SetTexture("_TextureBranches", textureBranches);
-		Manager.Instance.Environment.renderer.material.SetTexture("_TextureRoots", textureRoots);
+		renderer.material.SetTexture("_TextureBranches", textureBranches);
+		renderer.material.SetTexture("_TextureRoots", textureRoots);
 	}
 	
 	void Update () 

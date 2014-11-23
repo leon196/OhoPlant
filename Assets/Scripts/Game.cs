@@ -2,8 +2,9 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Game : MonoBehaviour {
-
+public class Game : MonoBehaviour 
+{
+	public float worldSpeed = 0.05f;
 	public float minEnergy = 0.5f;
 
 	private Controls controls;
