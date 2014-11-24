@@ -33,7 +33,7 @@ public class Branch
 		torsade.x = Mathf.Cos(angleTorsade);
 		torsade.y = Mathf.Sin(angleTorsade);
 
-		position = position + (direction + Manager.Instance.GetSunDirection() + torsade).normalized;
+		position = position + (direction + Manager.Instance.GetSunDirection()).normalized;
 
 		if ((int)position.x != (int)lastPosition.x || (int)position.y != (int)lastPosition.y) 
 		{

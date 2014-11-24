@@ -110,7 +110,7 @@
             float random = rand(uv.xy);
             float shade = min(1.0, random + _Shades);
             float shadeGrass = min(1.0, rand(uv.xy - sunDirection) + _Shades);
-            float shadeGround =  min(1.0, rand(uv.xy - moonDirection) + _Shades);
+            float shadeGround =  min(1.0, rand(uv.xy + moonDirection) + _Shades);
 
             // Ground position
             float slice = 1.0 / details;

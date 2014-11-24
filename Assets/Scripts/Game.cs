@@ -8,11 +8,12 @@ public class Game : MonoBehaviour
 	public float minEnergy = 0.5f;
 
 	private Controls controls;
+	private Water water;
 
 	void Start ()
 	{
 		controls = GetComponent<Controls>();	
-		
+		water = GetComponent<Water>();
 	}
 	
 	void Update () 
@@ -21,9 +22,11 @@ public class Game : MonoBehaviour
 		{
 			Arduino.Manager.Update();
 		}
+
+		water.UpdateRain();
 	}
 
-	public float GetGlobalLight () {
+	public float GetEnergy () {
 		return Mathf.Max(minEnergy, (Mathf.Cos(controls.GetSunAngle() - Mathf.PI / 2f) + 1f) * 0.5f);
 	}
 }

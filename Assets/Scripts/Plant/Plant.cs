@@ -19,6 +19,10 @@ public class Plant : MonoBehaviour
 
 	private Game game;
 
+	private bool gotResource;
+	private bool gotEnergy;
+	private bool gotCycleGrowth;
+
 	void Start () 
 	{
 		game = GetComponent<Game>();
@@ -29,8 +33,6 @@ public class Plant : MonoBehaviour
 		roots.Add(new Root(Vector3.zero));
 
 		branches = new List<Branch>();
-		branches.Add(new Branch(Vector3.zero));
-		branches.Add(new Branch(Vector3.zero));
 		branches.Add(new Branch(Vector3.zero));
 
 		textureBranches = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
@@ -57,23 +59,34 @@ public class Plant : MonoBehaviour
 	
 	void Update () 
 	{
-		if (resource > 0 && growthLastTime + growthDelay < Time.time)
+		energy = game.GetEnergy();
+
+		gotEnergy = energy > 0f;
+		gotResource = resource > 0f;
+		gotCycleGrowth = growthLastTime + growthDelay < Time.time;
+
+		if (gotEnergy && gotResource && gotCycleGrowth)
 		{
 			for (int r = 0; r < roots.Count; ++r) 
 			{
 				Root root = roots[r];
+				
+				// Grow Root
 				root.Grow();
 
+				// Set Pixel
 				Vector3 position = root.position;
 				position.x = Mathf.Max(0f, Mathf.Min(dimension, position.x + dimension / 2f));
 				position.y = Mathf.Max(0f, Mathf.Min(dimension, position.y + dimension / 2f));
 				textureRoots.SetPixel((int)position.x, (int)position.y, Color.green);
+
+				// 
 			}
 			for (int b = 0; b < branches.Count; ++b) 
 			{
 				Branch branch = branches[b];
 
-				if (branch.distance < 10f) 
+				if (branch.distance < 20f) 
 				{
 					branch.Grow();
 
@@ -81,10 +94,12 @@ public class Plant : MonoBehaviour
 					position.x = Mathf.Max(0f, Mathf.Min(dimension, position.x + dimension / 2f));
 					position.y = Mathf.Max(0f, Mathf.Min(dimension, position.y + dimension / 2f));
 					textureBranches.SetPixel((int)position.x, (int)position.y, Color.green);	
-				} 
-				/*else {
-					branches.Add(new Branch(branch.position));
-				}*/
+
+					/*if (branch.distance >= 20f) {
+						branches.Add(new Branch(branch.position));
+						branches.Add(new Branch(branch.position));
+					}*/
+				}
 			}
 
 			textureRoots.Apply();
@@ -109,5 +124,20 @@ public class Plant : MonoBehaviour
 	public void AddResource (int amount = 1)
 	{
 		resource += amount;
+	}
+
+	public void AddRootAt (int x, int y)
+	{
+		textureRoots.SetPixel(x, y, Color.green);
+	}
+
+	public void AddRootWithFood (Food food)
+	{
+		int halfSize = food.dimension/2;
+		int x = (int)Mathf.Clamp(food.position.x, halfSize, dimension - halfSize - 1);
+		int y = (int)Mathf.Clamp(food.position.y, halfSize, dimension - halfSize - 1);
+		Color[] colors = new Color[food.dimension * food.dimension];
+		for (int i = 0; i < food.shape.Length; ++i) colors[i] = food.shape[i].r > 0f ? Color.green : Color.clear;
+		textureRoots.SetPixels(x - halfSize, y - halfSize, food.dimension, food.dimension, colors);
 	}
 }

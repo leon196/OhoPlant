@@ -103,10 +103,22 @@ public class Arduino
 		return int.Parse(input[6 + number-1]) / 100f;
 	}
 
+	// 
+	public float SliderWithDetails (int number, float details)
+	{
+		return Mathf.Floor(details * int.Parse(input[6 + number-1]) / 100f) / details;
+	}
+
 	// [1, 2, 3]
 	public float Spiner (int number)
 	{
 		return int.Parse(input[8 + number-1]) / 100f;
+	}
+
+	//
+	public float SpinerWithDetails (int number, float details)
+	{
+		return Mathf.Floor(details * int.Parse(input[8 + number-1]) / 100f) / details;
 	}
 
 }

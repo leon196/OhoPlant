@@ -36,9 +36,10 @@ public class Water : MonoBehaviour
 			clear[i] = Color.clear;
 
 		water.SetPixels(0, 0, dimension, dimension, clear);
+		water.Apply();
 	}
 
-	void Update ()
+	public void UpdateRain ()
 	{
 
 		// Clear
@@ -60,7 +61,7 @@ public class Water : MonoBehaviour
 				waterLastTime = Time.time;
 				for (int i = 0; i < count; ++i) {
 					Vector3 position = new Vector3();
-					float ratio = i / (float)count;
+					//float ratio = i / (float)count;
 					position.x = cloudPosition.x + i * 2 - count + 1;
 					position.y = cloudPosition.y + Random.Range(-1, 1) - count * 2;//- Mathf.Floor(i / 4f) - (i % 4);// + Random.Range(-2, 2);
 					// - ((Mathf.Sin(ratio * Mathf.PI)) / 2f) * shaders.CloudRadius * dimension * 2;
@@ -95,7 +96,7 @@ public class Water : MonoBehaviour
 				Vector3 position = droplets[i].position;
 				int x = (int)position.x;
 				int y = (int)position.y;
-				bool collision = plant.IsBranchAt(x, y) || plant.IsRootAt(x, y);
+				bool collision = plant.IsBranchAt(x, y) || plant.IsRootAt(x, y) || IsWaterAt(x, y);
 				bool outOfGround = position.y >= dimension || position.y < 0 || position.x < 0 || position.x >= dimension;
 
 				// Clear

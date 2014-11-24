@@ -15,15 +15,15 @@ public class Feeder : MonoBehaviour
 	private int foodMax = 16;
 
 	private Game game;
-	private Controls controls;
-	private Shaders shaders;
+	//private Controls controls;
+	//private Shaders shaders;
 	private Plant plant;
 
 	void Start ()
 	{
 		game = GetComponent<Game>();
-		controls = GetComponent<Controls>();	
-		shaders = GetComponent<Shaders>();
+		//controls = GetComponent<Controls>();	
+		//shaders = GetComponent<Shaders>();
 		plant = GetComponent<Plant>();
 
 		foodMap = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
@@ -84,12 +84,27 @@ public class Feeder : MonoBehaviour
 				Vector3 position = foods[i].position;
 
 				bool collision = plant.IsRootAt((int)position.x, (int)position.y);
+				/*int size = foods[i].dimension;
+				int count = foods[i].dimension * foods[i].dimension;
+				for (int c = 0; c < count; ++c) {
+					if (foods[i].shape[c].r > 0f) {
+						int x = (int)(position.x + (c % size));
+						int y = (int)(position.y + Mathf.Floor(c / size));
+						if (plant.IsRootAt(x, y)) {
+							collision = true;
+							break;
+						}
+					}
+				}*/
 				//bool outOfGround = position.y > dimension / 2 || position.y < 0 || position.x < 0 || position.x >= dimension;
 
 				// Clear
 				if (collision)// || outOfGround)
 				{
+					//
 					plant.AddResource(foods[i].amount);
+					//plant.AddRootWithFood(foods[i]);
+					
 					foods[i] = null;
 					recycle.Add(i);
 					--foodCount;

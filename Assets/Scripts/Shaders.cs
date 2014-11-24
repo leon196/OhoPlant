@@ -33,7 +33,7 @@ public class Shaders : MonoBehaviour
 	void Update () {
 		Shader.SetGlobalFloat("WorldTime", Time.time);
 		Shader.SetGlobalFloat("WorldSpeed", game.worldSpeed);
-		Shader.SetGlobalFloat("WorldLight", Mathf.Max(minLight, game.GetGlobalLight()));
+		Shader.SetGlobalFloat("WorldLight", Mathf.Max(minLight, game.GetEnergy()));
 
 		Shader.SetGlobalVector("SunDirection", controls.GetSunDirectionVec4());
 		Shader.SetGlobalVector("MoonDirection", controls.GetMoonDirectionVec4());

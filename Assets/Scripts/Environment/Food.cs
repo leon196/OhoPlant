@@ -12,7 +12,7 @@ public class Food {
 		index = index_;
 		speed = speed_;
 		position = position_;
-		dimension = 3;
+		dimension = 2;
 		shape = new Color[dimension*dimension];
 		amount = 0;
 		for (int i = 0; i < dimension*dimension; ++i) {

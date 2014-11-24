@@ -13,14 +13,16 @@ public class Controls : MonoBehaviour
 	private float angleMoon = 0f;
 	private float angleCloud = 0f;
 
+	private float angleOffset = 0f;//Mathf.PI / -2f;
+
 	//
 	private Game game;
-	private Shaders shaders;
+	//private Shaders shaders;
 
 	void Start () 
 	{
 		game = GetComponent<Game>();
-		shaders = GetComponent<Shaders>();
+		//shaders = GetComponent<Shaders>();
 	}
 	
 	void Update () 
@@ -31,7 +33,7 @@ public class Controls : MonoBehaviour
 			inputMoon = 1f - Arduino.Manager.Spiner(1);
 			inputCloud = 1f - Arduino.Manager.Spiner(2);
 
-			game.worldSpeed = 0.05f + 0.1f * Arduino.Manager.Slider(1);
+			game.worldSpeed = 0.1f + Arduino.Manager.SliderWithDetails(1, 8);
 			renderer.material.SetFloat("_Details", 4f + (1f - Arduino.Manager.Slider(2)) * 4f);
 
 		} else {
@@ -40,9 +42,9 @@ public class Controls : MonoBehaviour
 			inputCloud = 1f - Input.mousePosition.y / Screen.height;
 		}
 
-		angleSun = inputSun * Mathf.PI * 2f - Mathf.PI / 2f;
-		angleMoon = inputMoon * Mathf.PI * 2f - Mathf.PI / 2f;
-		angleCloud = inputCloud * Mathf.PI * 2f - Mathf.PI / 2f;
+		angleSun = inputSun * Mathf.PI + angleOffset;
+		angleMoon = inputMoon * Mathf.PI + angleOffset;
+		angleCloud = inputCloud * Mathf.PI + angleOffset;
 	}
 
 	public float GetSunRatio () {
