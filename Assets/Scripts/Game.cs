@@ -7,6 +7,8 @@ public class Game : MonoBehaviour
 	public float worldSpeed = 0.05f;
 	public float minEnergy = 0.5f;
 
+	public int dimension = 128;
+
 	private Controls controls;
 	private Water water;
 

@@ -18,3 +18,9 @@ float2 uv = pixelize(sp.uv.xy, details);
 float shade = min(1.0, rand(uv.xy + float2(anim, 0.0)) + 0.2);
 float alpha = step(distance(uv, float2(0.5, 0.5)), _Step);
 return float4(_Color.rgb * shade, alpha);
+
+// Squares
+float gr = step(0.0, cos(uv.y * 100.0) + cos(uv.x * 100.0));
+
+// 
+float gr = step(0.0, cos((uv.y * (cos(uv.x * 1.0) * 10.0)) * 100.0));

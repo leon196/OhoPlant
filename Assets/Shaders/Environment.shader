@@ -1,7 +1,13 @@
-﻿Shader "Custom/Environment" {
-    Properties {
-
-        _Details ("Details", Range (4.0, 8.0)) = 4.0
+﻿Shader "Custom/Environment" 
+{
+    Properties 
+    {
+        _Details ("Details Static", Range (0.0, 8.0)) = 8.0
+        _DetailsMin ("Details Range Min", Range (0.0, 8.0)) = 4.0
+        _DetailsMax ("Details Range Max", Range (0.0, 16.0)) = 8.0
+        _DetailsUnit ("Details Range Unit", Range (0.0, 8.0)) = 4.0
+        _DetailsScope ("Lens Scope", Range (0.0, 1.0)) = 0.0
+        _DetailsDirection ("Lens Curve", Range (0.0, 1.0)) = 1.0
         _Shades ("Shades", Range (0.0, 1.0)) = 0.2
 
         _ColorBranches ("Branches Color", Color) = (1,1,1,1)
@@ -31,63 +37,44 @@
         _ColorGround ("Ground", Color) = (1,1,1,1)
         _ColorGrass ("Grass", Color) = (1,1,1,1)
     }
-    SubShader {
-	   	Tags { "Queue"="Transparent" "IgnoreProjector"="True" }
-
-        Blend SrcAlpha OneMinusSrcAlpha
-        Cull Off
-        Lighting Off
+    SubShader 
+    {
+        Tags { "RenderType"="Opaque" }
         CGPROGRAM
         #pragma surface surf Lambert
-
         #include "UnityCG.cginc"
-        
-        sampler2D _TextureBranches;
-        float4 _ColorBranches;
-        sampler2D _TextureRoots;
-        float4 _ColorRoots;
-        sampler2D _TextureWater;
-        float4 _ColorWater;
-        sampler2D _TextureFood;
-        float4 _ColorFood;
 
-        float4 _ColorSunInner;
-        float4 _ColorSunOutter;
-        float _SunDistance;
-        float _SunRadius;
+        /* Parameters from Unity Editor */
 
-        float4 _ColorMoonInner;
-        float4 _ColorMoonOutter;
-        float _MoonDistance;
-        float _MoonRadius;
+        // Textures
+        sampler2D _TextureBranches, _TextureRoots, _TextureWater, _TextureFood;
 
-        float4 _ColorCloud;
-        float _CloudDistance;
-        float _CloudRadius;
+        // Colors
+        float4 _ColorSunInner, _ColorSunOutter, _ColorMoonInner, _ColorMoonOutter, _ColorCloud, _ColorSky, _ColorGround, _ColorGrass, _ColorBranches, _ColorRoots, _ColorWater, _ColorFood;
 
-        float4 _ColorSky;
-        float4 _ColorGround;
-        float4 _ColorGrass;
-        float _Details;
-        float _Shades;
-        
-        uniform float WorldTime;
-        uniform float WorldSpeed;
-        uniform float WorldLight;
+        // Floats
+        float _SunDistance, _SunRadius, _MoonDistance, _MoonRadius, _CloudDistance, _CloudRadius, _Details, _Shades, _DetailsMin, _DetailsMax, _DetailsUnit, _DetailsScope, _DetailsDirection;
 
-        uniform float4 SunDirection;
-        uniform float4 MoonDirection;
-        uniform float4 CloudDirection;
+        /* Uniforms from Shaders.cs */
 
-        float rand(float2 co){
-            return frac(sin(dot(co.xy, float2(12.9898,78.233))) * 43758.5453);
-        }
+        // Uniforms World
+        uniform float WorldTime, WorldSpeed, WorldLight;
 
-        float2 pixelize(float2 uv, float details) {
-        	return floor(uv.xy * details) / details;
-        }
+        // Uniforms Directions
+        uniform float4 SunDirection, MoonDirection, CloudDirection;
 
-        struct Input {
+        /* Helpers */
+
+        // Dat random function for glsl 
+        float rand(float2 co){ return frac(sin(dot(co.xy, float2(12.9898,78.233))) * 43758.5453); }
+
+        // Pixelize coordinates
+        float2 pixelize(float2 uv, float details) { return floor(uv.xy * details) / details; }
+
+        /* Surface Shader */
+
+        struct Input 
+        {
             float2 uv_MainTex;
             float4 screenPos;
         };
@@ -96,13 +83,21 @@
             
             // UVs
             float2 screenUV = IN.screenPos.xy / IN.screenPos.w;
-            screenUV.y *= _ScreenParams.y / _ScreenParams.x;
-            screenUV.y += (1.0 - _ScreenParams.y / _ScreenParams.x) / 2.0;
-            float details = pow(2, floor(_Details));
+            float screenRatio = _ScreenParams.y / _ScreenParams.x;
+            screenUV.y *= screenRatio;
+            screenUV.y += (1.0 - screenRatio) / 2.0;
+
+            // Pixel Fake QuadTree
+            float dist = distance(pixelize(screenUV, pow(2.0, floor(_DetailsUnit))), float2(0.5, 0.5));
+            dist = clamp(abs(_DetailsDirection - dist) + _DetailsScope, 0.0, 1.0);
+            dist = dist * dist;
+            float details = _DetailsMin + dist * _DetailsMax;
+            details = pow(2.0, floor(details));
             float2 uv = pixelize(screenUV, details);
 
             // Time & Animation
-        	float time = WorldTime * WorldSpeed;
+        	float time = WorldTime * WorldSpeed * 0.1;
+            float oscillo = (1.0 + cos(time)) / 2.0;
             float2 sunDirection = pixelize(pixelize(SunDirection.xy, 4.0) * time, details);
             float2 moonDirection = pixelize(pixelize(MoonDirection.xy, 4.0) * time, details);
 
@@ -110,7 +105,11 @@
             float random = rand(uv.xy);
             float shade = min(1.0, random + _Shades);
             float shadeGrass = min(1.0, rand(uv.xy - sunDirection) + _Shades);
-            float shadeGround =  min(1.0, rand(uv.xy + moonDirection) + _Shades);
+            float couche = cos((uv.y + time + cos((uv.x + uv.y + time) * 10.0) * 0.01) * 40.0);
+            float gr = step(cos(time * 8.0) * 0.5, couche);
+            
+            //
+            float shadeGround = clamp(gr + _Shades, 0.0, 1.0);
 
             // Ground position
             float slice = 1.0 / details;
@@ -155,6 +154,7 @@
             float2 textureUV = screenUV;
             textureUV -= 0.5 + 0.5 * textureDetails;
             textureUV /= max(1.0, textureDetails);
+            textureUV = pixelize(textureUV, details);
 
             // Plant
             float4 branches = tex2D(_TextureBranches, textureUV);
@@ -170,7 +170,7 @@
             // Apply layers
             float3 layerSky = lerp(lerp(lerp(sky, sun, sunAlpha), moon, moonAlpha), cloud, cloudAlpha);
             float3 layerGround = lerp(_ColorGround * shadeGround, _ColorGrass * shadeGrass, grass);
-            float3 layerEnvironment = lerp(lerp(layerGround, layerSky, ground), _ColorFood * shadeGround, food.r);
+            float3 layerEnvironment = lerp(lerp(layerGround, layerSky, ground), _ColorFood, food.r);
             float3 layerPlant = lerp(lerp(layerEnvironment, _ColorBranches * shade, branches.g), _ColorRoots * shade, roots.g);
             float3 layerWater = lerp(layerPlant, _ColorWater + shadeWater, water.b);
 

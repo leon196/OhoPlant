@@ -26,7 +26,7 @@ public class Shaders : MonoBehaviour
 
 		cloudRadius = renderer.material.GetFloat("_CloudRadius");
 		cloudDistance = renderer.material.GetFloat("_CloudDistance");
-		levelOfDetails = (int)renderer.material.GetFloat("_Details");
+		//levelOfDetails = (int)renderer.material.GetFloat("_Details");
 	}
 	
 	// Update is called once per frame
@@ -39,6 +39,6 @@ public class Shaders : MonoBehaviour
 		Shader.SetGlobalVector("MoonDirection", controls.GetMoonDirectionVec4());
 		Shader.SetGlobalVector("CloudDirection", controls.GetCloudDirectionVec4());
 
-		levelOfDetails = (int)renderer.material.GetFloat("_Details");
+		//levelOfDetails = (int)renderer.material.GetFloat("_Details");
 	}
 }

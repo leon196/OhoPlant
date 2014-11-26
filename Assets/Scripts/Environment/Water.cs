@@ -8,7 +8,8 @@ public class Water : MonoBehaviour
 	private List<Droplet> droplets;
 	private List<int> recycle;
 	private Color[] clear;
-	private int dimension = 256;
+	private int dimension;
+
 	private float waterLastTime = 0f;
 	private float waterTimeDelay = 0.01f;
 
@@ -24,6 +25,7 @@ public class Water : MonoBehaviour
 		shaders = GetComponent<Shaders>();
 		plant = GetComponent<Plant>();
 
+		dimension = Manager.Instance.Game.dimension;
 		water = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
 		water.filterMode = FilterMode.Point;
 		droplets = new List<Droplet>();

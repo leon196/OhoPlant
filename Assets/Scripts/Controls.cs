@@ -13,7 +13,7 @@ public class Controls : MonoBehaviour
 	private float angleMoon = 0f;
 	private float angleCloud = 0f;
 
-	private float angleOffset = 0f;//Mathf.PI / -2f;
+	private float angleOffset = Mathf.PI / -10f;
 
 	//
 	private Game game;
@@ -37,14 +37,15 @@ public class Controls : MonoBehaviour
 			renderer.material.SetFloat("_Details", 4f + (1f - Arduino.Manager.Slider(2)) * 4f);
 
 		} else {
-			inputSun = 1f - Input.mousePosition.x / Screen.width;
-			inputMoon = 1f - Input.mousePosition.x / Screen.width;
-			inputCloud = 1f - Input.mousePosition.y / Screen.height;
+			float ratio = Input.mousePosition.x / Screen.width;
+			inputSun = 1f - ratio;
+			inputMoon = 1f - ratio;
+			inputCloud = 1f - ratio;
 		}
 
-		angleSun = inputSun * Mathf.PI + angleOffset;
+		angleSun = inputSun * Mathf.PI;
 		angleMoon = inputMoon * Mathf.PI + angleOffset;
-		angleCloud = inputCloud * Mathf.PI + angleOffset;
+		angleCloud = inputCloud * Mathf.PI + angleOffset * 2;
 	}
 
 	public float GetSunRatio () {

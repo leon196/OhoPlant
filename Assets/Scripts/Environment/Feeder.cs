@@ -8,7 +8,7 @@ public class Feeder : MonoBehaviour
 	private List<Food> foods;
 	private List<int> recycle;
 	private Color[] clear;
-	private int dimension = 256;
+	private int dimension;
 	private float foodLastTime = 0f;
 	private float foodTimeDelay = 0.5f;
 	private int foodCount = 0;
@@ -26,6 +26,7 @@ public class Feeder : MonoBehaviour
 		//shaders = GetComponent<Shaders>();
 		plant = GetComponent<Plant>();
 
+		dimension = Manager.Instance.Game.dimension;
 		foodMap = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
 		foodMap.filterMode = FilterMode.Point;
 		foods = new List<Food>();

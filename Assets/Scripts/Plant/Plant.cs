@@ -14,8 +14,8 @@ public class Plant : MonoBehaviour
 
 	private Texture2D textureBranches;
 	private Texture2D textureRoots;
-	private int dimension = 256;
 	private Color[] clear;
+	private int dimension;
 
 	private Game game;
 
@@ -26,6 +26,7 @@ public class Plant : MonoBehaviour
 	void Start () 
 	{
 		game = GetComponent<Game>();
+		dimension = Manager.Instance.Game.dimension;
 
 		roots = new List<Root>();
 		roots.Add(new Root(Vector3.zero));

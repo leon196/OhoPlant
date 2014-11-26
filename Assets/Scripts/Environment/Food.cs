@@ -6,6 +6,7 @@ public class Food {
 	public Vector3 position;
 	public Color[] shape;
 	public int dimension;
+	public int globalDimension;
 	public int amount;
 
 	public Food (int index_, float speed_, Vector3 position_) {
@@ -25,6 +26,8 @@ public class Food {
 			}
 			shape[i] = color;
 		}
+
+		globalDimension = Manager.Instance.Game.dimension;
 	}
 
 	public void Move (float speedGlobal) 
@@ -33,13 +36,13 @@ public class Food {
 		//float gravity = Time.deltaTime * speed * (ground ? 0.1f : 1f);
 		position += Manager.Instance.GetMoonDirection() * speed * speedGlobal;
 		if (position.x < 0f) {
-			position.x = 255f;
-		} else if (position.x > 255f) {
+			position.x = globalDimension - 1;
+		} else if (position.x >= globalDimension) {
 			position.x = 0f;
 		}
 		if (position.y < 0f) {
-			position.y = 127f;
-		} else if (position.y > 127f) {
+			position.y = globalDimension/2;
+		} else if (position.y > globalDimension/2) {
 			position.y = 0f;
 		}
 	}
