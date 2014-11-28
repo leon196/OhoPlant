@@ -14,6 +14,11 @@ public class Planter : MonoBehaviour
 	private bool gotEnergy;
 	private bool gotCycleGrowth;
 
+	public bool autoRestart = true;
+	private bool autoRestarted = false;
+	private float restartTimeStart = 0f;
+	private float restartTimeDelay = 1f;
+
 	// Pseudo L-System
 	private int depth;
 	private float branchAngle;
@@ -37,6 +42,7 @@ public class Planter : MonoBehaviour
 	private int branchesCount;
 	private List<Root> roots;
 	private List<int> rootsRecycle;
+	private List<GameObject> flowers;
 
 	// Draw Stuff
 	private Texture2D textureBranches;
@@ -59,7 +65,7 @@ public class Planter : MonoBehaviour
 
 		/* Pseudo L-System */
 
-		depth = game.plantDepth;
+		depth = game.plantDepth + Random.Range(1, 3);
 		branchAngle = Mathf.PI / 2f;
 		branchLength = (dimension / 2) / (depth + 2);
 
@@ -82,6 +88,8 @@ public class Planter : MonoBehaviour
 		branchesRecycle = new List<int>();
 		branchesCount = 0;
 		SpawnBranch(Vector3.zero, Vector3.up, 0);
+
+		flowers = new List<GameObject>();
 
 		/* Draw Stuff */
 
@@ -107,6 +115,19 @@ public class Planter : MonoBehaviour
 		gotResource = resource > 0f;
 		gotCycleGrowth = growthLastTime + growthDelay < Time.time;
 
+		if (branchesCount == 0 && autoRestart)
+		{
+			if (!autoRestarted) {
+				autoRestarted = true;
+				restartTimeStart = Time.time;
+			} else {
+				if (restartTimeStart + restartTimeDelay < Time.time) {
+					Reset();
+					autoRestarted = false;
+				}
+			}
+		}
+
 		if (gotEnergy && gotCycleGrowth)
 		{
 
@@ -124,46 +145,56 @@ public class Planter : MonoBehaviour
 					branch.Grow(energy, Manager.Instance.GetSunAngle());
 					branchesEnergy += branch.photosynthesize;
 
-					// Optimized Draw
+					// Check for change
 					if (branch.ChangePosition()) 
 					{
-						DrawBranch(branch);
-						branch.UpdateLastPosition();
-					}
-
-					// Stop Growing
-					if (branch.Length() >= branchLength)
-					{
-						if (branch.depth < depth)
+						// Stop Growing
+						if (branch.Length() >= branchLength)
 						{
+							if (branch.depth < depth)
+							{
+
+								// Split
+								Vector3 position = branch.position;
+								Vector3 direction = branch.direction;
+								int count = 2;
+								float angle = branchAngle / (count - 1);
+								for (int i = 0; i < count; ++i) 
+								{
+									float rand = Random.Range(Mathf.PI * -0.5f, Mathf.PI * 0.5f);
+									float x = Mathf.Cos(angle * i + branchAngle/2 + rand);
+									float y = Mathf.Sin(angle * i + branchAngle/2 + rand);
+									Vector3 newDirection = direction + new Vector3(x, y, 0); 
+									int newDepth = branch.depth + 1;
+
+									// Branch
+									SpawnBranch(position, newDirection.normalized, newDepth);
+
+								}
+
+								// Root
+								SpawnRoot(Vector3.zero);
+							} 
+							else 
+							{
+								// Grow Flower
+								GameObject flower = GameObject.Instantiate(Manager.Instance.Flower, Manager.Instance.GetTransformPosition(branch.position) + Vector3.back * 0.1f, Quaternion.identity) as GameObject;
+								flowers.Add(flower);
+							}
+
 							//
 							branch.DetachLeaf();
 
-							// Split
-							Vector3 position = branch.position;
-							Vector3 direction = branch.direction;
-							int count = 2;
-							float angle = branchAngle / (count - 1);
-							for (int i = 0; i < count; ++i) 
-							{
-								float x = Mathf.Cos(angle * i + branchAngle/2);
-								float y = Mathf.Sin(angle * i + branchAngle/2);
-								Vector3 newDirection = direction + new Vector3(x, y, 0); 
-								int newDepth = branch.depth + 1;
-
-								// Branch
-								SpawnBranch(position, newDirection.normalized, newDepth);
-
-							}
-
-							// Root
-							SpawnRoot(Vector3.zero);
+							//
+							branches[b] = null;
+							branchesRecycle.Add(b);
+							--branchesCount;
+						} 
+						// Draw
+						else {
+							DrawBranch(branch);
+							branch.UpdateLastPosition();
 						}
-
-						//
-						branches[b] = null;
-						branchesRecycle.Add(b);
-						--branchesCount;
 					}
 				}
 			}
@@ -196,15 +227,25 @@ public class Planter : MonoBehaviour
 
 					bool isOutOfVelocity = root.IsOutOfVelocity();
 
+
 					// Optimized Draw
 					if (root.ChangePosition()) 
 					{
-						DrawRoot(root);
-						root.UpdateLastPosition();
+						//
+						bool outOfScreen = root.position.x <= -dimension/2 || root.position.x >= dimension/2 - 1 || root.position.y <= -dimension/2 || root.position.y >= dimension/2 - 1;
+						if (outOfScreen) {
+							//
+							roots[r] = null;
+							rootsRecycle.Add(r);
+						} 
+						// Draw
+						else {
+							DrawRoot(root);
+							root.UpdateLastPosition();
+						}
 					}
-
 					// Stop Growing
-					if (isOutOfVelocity)
+					else if (isOutOfVelocity)
 					{
 						//
 						roots[r] = null;
@@ -313,6 +354,10 @@ public class Planter : MonoBehaviour
 		foreach (Branch branch in branches) 
 			if (branch != null)
 				branch.DetachLeaf();
+		foreach (GameObject flower in flowers) Destroy(flower);
+
+		Leaf.s_zIndex = 0f;
+
 		Start();
 	}
 }

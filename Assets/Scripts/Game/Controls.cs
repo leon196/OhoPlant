@@ -13,18 +13,24 @@ public class Controls : MonoBehaviour
 	private float angleMoon = 0f;
 	private float angleCloud = 0f;
 
+
+	private float astresHeight = 2f;
 	private float angleOffset = Mathf.PI / -10f;
 
 	//
 	private Game game;
 	//private Shaders shaders;
+	private GUIText text;
+	private Planter planter;
 
 	void Start () 
 	{
 		game = GetComponent<Game>();
 		//shaders = GetComponent<Shaders>();
+		text = GetComponent<GUIText>();
+		planter = GetComponent<Planter>();
 	}
-	
+
 	void Update () 
 	{
 		if (Arduino.Manager.Enable) 
@@ -33,8 +39,23 @@ public class Controls : MonoBehaviour
 			inputMoon = 1f - Arduino.Manager.Spiner(1);
 			inputCloud = 1f - Arduino.Manager.Spiner(2);
 
-			game.worldSpeed = 0.1f + Arduino.Manager.SliderWithDetails(1, 8);
-			renderer.material.SetFloat("_Details", 4f + (1f - Arduino.Manager.Slider(2)) * 4f);
+			// World Speed with Slider 1
+			game.worldSpeed = 0.5f + Arduino.Manager.Slider(1) * 4f;
+
+			// Lens Scope with Slider 2
+			renderer.material.SetFloat("_DetailsDirection", Arduino.Manager.Slider(2));
+
+			// Toggle Infos
+			if (Arduino.Manager.SwitchSwitched(1))
+			{
+				text.enabled = Arduino.Manager.Switch(1);
+			}
+
+			// Toggle Auto Restart
+			if (Arduino.Manager.SwitchSwitched(2))
+			{
+				planter.autoRestart = Arduino.Manager.Switch(2);
+			}
 
 		} else {
 			float ratio = Input.mousePosition.x / Screen.width;
@@ -59,28 +80,28 @@ public class Controls : MonoBehaviour
 	// Directions
 
 	public Vector3 GetSunDirection () {
-		return new Vector3(Mathf.Cos(angleSun), Mathf.Sin(angleSun) / 2f, 0f);
+		return new Vector3(Mathf.Cos(angleSun), Mathf.Sin(angleSun) / astresHeight, 0f);
 	}
 
 	public Vector3 GetMoonDirection () {
-		return new Vector3(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon) / 2f, 0f);
+		return new Vector3(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon) / astresHeight, 0f);
 	}
 
 	public Vector3 GetCloudDirection () {
-		return new Vector3(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud) / 2f, 1f);
+		return new Vector3(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud) / astresHeight, 1f);
 	}
 
 	// Shaders
 
 	public Vector4 GetSunDirectionVec4 () {
-		return new Vector4(Mathf.Cos(angleSun), Mathf.Sin(angleSun) / 2f, 0f, 0f);
+		return new Vector4(Mathf.Cos(angleSun), Mathf.Sin(angleSun) / astresHeight, 0f, 0f);
 	}
 
 	public Vector4 GetMoonDirectionVec4 () {
-		return new Vector4(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon) / 2f, 0f, 0f);
+		return new Vector4(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon) / astresHeight, 0f, 0f);
 	}
 
 	public Vector4 GetCloudDirectionVec4() {
-		return new Vector4(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud) / 2f, 0f, 0f);
+		return new Vector4(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud) / astresHeight, 0f, 0f);
 	}
 }

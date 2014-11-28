@@ -19,7 +19,7 @@ public class Food : Element
 		//velocity = 1f;
 		groundDecceleration = Random.Range(1f, 2f);
 
-		dimension = 2;
+		dimension = 4;
 		shape = new Color[dimension*dimension];
 		amount = 0;
 		for (int i = 0; i < dimension*dimension; ++i) {
@@ -36,11 +36,11 @@ public class Food : Element
 
 	public void Move (float speedGlobal) 
 	{
-		float ground = (position.y < globalDimension / 2 ? 1f : 0f);
+		float ground = (position.y < globalDimension / 2 ? 0.1f : 1f);
 		//float sky = 1f - ground;
 		Vector3 moon = Manager.Instance.GetMoonDirection();
 
-		position += (Vector3.down + moon * ground).normalized * speedGlobal;
+		position += ((Vector3.down * ground + moon)).normalized * speedGlobal;
 
 		//velocity -= groundDecceleration * ground * Time.deltaTime;
 	}

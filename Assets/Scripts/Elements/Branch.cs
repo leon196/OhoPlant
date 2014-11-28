@@ -4,11 +4,15 @@ using System.Collections.Generic;
 
 public class Branch : Element
 {
-	private Leaf leaf;
+	public Leaf leaf;
 	public float photosynthesize;
+
+	private float length;
 
 	private Vector3 positionInitial;
 	public int depth;
+
+	private float angleIndulgence = 10f;
 
 	public Branch (Vector3 position_, Vector3 direction_, int depth_)
 	{
@@ -21,6 +25,7 @@ public class Branch : Element
 		photosynthesize = 0f;
 
 		// L-System Node Level
+		length = Random.Range(1f, 2f);
 		depth = depth_;
 	}
 	
@@ -29,7 +34,7 @@ public class Branch : Element
 		// Check Energy
 		photosynthesize = leaf.direction.z / 360 - sunAngle / (Mathf.PI * 2f);
 		photosynthesize = Mathf.Abs(photosynthesize) * 360f;
-		photosynthesize = photosynthesize < 10f ? (10f - photosynthesize) / 10f : 0f;
+		photosynthesize = photosynthesize < angleIndulgence ? (angleIndulgence - photosynthesize) / angleIndulgence : 0f;
 
 		// Move Branch
 		position += direction * photosynthesize;
@@ -43,7 +48,7 @@ public class Branch : Element
 
 	public float Length ()
 	{
-		return Vector3.Distance(position, positionInitial);
+		return Vector3.Distance(position, positionInitial) * length;
 	}
 
 	public void DetachLeaf ()

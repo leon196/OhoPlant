@@ -8,7 +8,7 @@ public class Leaf : Element
 
 	// For overlapping issue
 	private float zIndex;
-	private static float s_zIndex = 0f; 
+	public static float s_zIndex = 0f; 
 
 	public Leaf (Vector3 position_, Vector3 direction_) 
 	{

@@ -57,6 +57,15 @@ public class Manager {
 		}
 	}
 
+	// Flower
+	private GameObject _flower = null;
+	public GameObject Flower {
+		get {
+			if (_flower == null) _flower = Resources.Load("Flower") as GameObject;
+			return _flower;
+		}
+	}
+
 	public float GetSunAngle () {
 		return Controls.GetSunAngle();
 	}

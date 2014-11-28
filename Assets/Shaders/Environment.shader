@@ -58,8 +58,11 @@
         // Uniforms World
         uniform float WorldTime, WorldSpeed, WorldLight;
 
+        uniform float _ToggleTexture;
+
         // Uniforms Directions
         uniform float4 SunDirection, MoonDirection, CloudDirection;
+
 
         /* Helpers */
 
@@ -107,7 +110,7 @@
             //float gr = step(0.0, couche);
             
             //
-            float shadeGround = min(1.0, rand(uv.xy - moonDirection) + _Shades);//clamp(gr + _Shades, 0.0, 1.0);
+            float shadeGround = min(1.0, rand(uv.xy + moonDirection) + _Shades);//clamp(gr + _Shades, 0.0, 1.0);
 
             // Ground position
             float slice = 1.0 / details;
