@@ -2,9 +2,7 @@
 {
     Properties 
     {
-        _Details ("Details Static", Range (0.0, 8.0)) = 8.0
-        _DetailsMin ("Details Range Min", Range (0.0, 8.0)) = 4.0
-        _DetailsMax ("Details Range Max", Range (0.0, 16.0)) = 8.0
+        _Details ("Details", Range (0.0, 8.0)) = 8.0
         _DetailsUnit ("Details Range Unit", Range (0.0, 8.0)) = 4.0
         _DetailsScope ("Lens Scope", Range (0.0, 1.0)) = 0.0
         _DetailsDirection ("Lens Curve", Range (0.0, 1.0)) = 1.0
@@ -89,10 +87,10 @@
 
             // Pixel Fake QuadTree
             float dist = distance(pixelize(screenUV, pow(2.0, floor(_DetailsUnit))), float2(0.5, 0.5));
-            dist = clamp(abs(_DetailsDirection - dist) + _DetailsScope, 0.0, 1.0);
-            dist = dist * dist;
-            float details = _DetailsMin + dist * _DetailsMax;
-            details = pow(2.0, floor(details));
+            dist = abs(_DetailsDirection - dist);
+            dist = clamp(dist * sqrt(dist) + _DetailsScope, 0.0, 1.0);
+            float details = pow(2.0, floor(dist * _Details));
+            //float details = pow(2.0, floor(_Details));
             float2 uv = pixelize(screenUV, details);
 
             // Time & Animation
@@ -105,11 +103,11 @@
             float random = rand(uv.xy);
             float shade = min(1.0, random + _Shades);
             float shadeGrass = min(1.0, rand(uv.xy - sunDirection) + _Shades);
-            float couche = cos((uv.y + time + cos((uv.x + uv.y + time) * 10.0) * 0.01) * 40.0);
-            float gr = step(cos(time * 8.0) * 0.5, couche);
+            //float couche = cos((uv.y + cos((uv.x + uv.y) * 10.0) * 0.01) * 40.0);
+            //float gr = step(0.0, couche);
             
             //
-            float shadeGround = clamp(gr + _Shades, 0.0, 1.0);
+            float shadeGround = min(1.0, rand(uv.xy - moonDirection) + _Shades);//clamp(gr + _Shades, 0.0, 1.0);
 
             // Ground position
             float slice = 1.0 / details;
@@ -117,7 +115,7 @@
             currentY = clamp(currentY, 0.0, 1.0);
 
             // Sky
-            float skyCloud = step(rand(uv.yy), 0.5) * rand(uv.yy + pixelize(float2(0.0, time), details));
+            float skyCloud = step(0.0, cos((uv.y - time + cos((uv.x + uv.y) * 10.0) * 0.01) * 40.0)); //step(rand(uv.yy), 0.5) * rand(uv.yy + pixelize(float2(0.0, time), details));
             float3 sky = _ColorSky + skyCloud;
 
             // Sun
@@ -154,24 +152,25 @@
             float2 textureUV = screenUV;
             textureUV -= 0.5 + 0.5 * textureDetails;
             textureUV /= max(1.0, textureDetails);
-            textureUV = pixelize(textureUV, details);
+            //textureUV = pixelize(textureUV, details);
 
             // Plant
             float4 branches = tex2D(_TextureBranches, textureUV);
             float4 roots = tex2D(_TextureRoots, textureUV);
+            float3 colorRoots = lerp(_ColorRoots.rgb, _ColorBranches.rgb, ground);
 
             // Water
             float shadeWater = rand(uv.xx) * 0.4;
-            float4 water = tex2D(_TextureWater, textureUV);
+            float4 water = tex2D(_TextureWater, pixelize(textureUV, details));
 
             // Food
-            float4 food = tex2D(_TextureFood, textureUV);
+            float4 food = tex2D(_TextureFood, pixelize(textureUV, details));
 
             // Apply layers
             float3 layerSky = lerp(lerp(lerp(sky, sun, sunAlpha), moon, moonAlpha), cloud, cloudAlpha);
             float3 layerGround = lerp(_ColorGround * shadeGround, _ColorGrass * shadeGrass, grass);
             float3 layerEnvironment = lerp(lerp(layerGround, layerSky, ground), _ColorFood, food.r);
-            float3 layerPlant = lerp(lerp(layerEnvironment, _ColorBranches * shade, branches.g), _ColorRoots * shade, roots.g);
+            float3 layerPlant = lerp(lerp(layerEnvironment, _ColorBranches * shade, branches.g), colorRoots * shade, roots.g);
             float3 layerWater = lerp(layerPlant, _ColorWater + shadeWater, water.b);
 
             o.Emission = layerWater;

@@ -59,28 +59,28 @@ public class Controls : MonoBehaviour
 	// Directions
 
 	public Vector3 GetSunDirection () {
-		return new Vector3(Mathf.Cos(angleSun), Mathf.Sin(angleSun), 0f);
+		return new Vector3(Mathf.Cos(angleSun), Mathf.Sin(angleSun) / 2f, 0f);
 	}
 
 	public Vector3 GetMoonDirection () {
-		return new Vector3(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon), 0f);
+		return new Vector3(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon) / 2f, 0f);
 	}
 
 	public Vector3 GetCloudDirection () {
-		return new Vector3(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud), 1f);
+		return new Vector3(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud) / 2f, 1f);
 	}
 
 	// Shaders
 
 	public Vector4 GetSunDirectionVec4 () {
-		return new Vector4(Mathf.Cos(angleSun), Mathf.Sin(angleSun), 0f, 0f);
+		return new Vector4(Mathf.Cos(angleSun), Mathf.Sin(angleSun) / 2f, 0f, 0f);
 	}
 
 	public Vector4 GetMoonDirectionVec4 () {
-		return new Vector4(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon), 0f, 0f);
+		return new Vector4(Mathf.Cos(angleMoon), Mathf.Sin(angleMoon) / 2f, 0f, 0f);
 	}
 
 	public Vector4 GetCloudDirectionVec4() {
-		return new Vector4(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud), 0f, 0f);
+		return new Vector4(Mathf.Cos(angleCloud), Mathf.Sin(angleCloud) / 2f, 0f, 0f);
 	}
 }

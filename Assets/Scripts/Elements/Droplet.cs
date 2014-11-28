@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class Droplet {
-	public int index;
-	public float speed;
-	public Vector3 position;
+public class Droplet : Element
+{
 	private float globalDimension;
 
-	public Droplet (int index_, float speed_, Vector3 position_) {
+	public Droplet (int index_, float speed_, Vector3 position_) 
+	{
 		index = index_;
 		speed = speed_;
 		position = position_;

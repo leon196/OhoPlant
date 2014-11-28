@@ -25,8 +25,17 @@ public class Manager {
 	private Controls _controls = null;
 	public Controls Controls {
 		get {
-			if (_controls == null) _controls = Instance.Game.GetComponent<Controls>();
+			if (_controls == null) _controls = Game.GetComponent<Controls>();
 			return _controls;
+		}
+	}
+
+	// Shaders
+	private Shaders _shaders = null;
+	public Shaders Shaders {
+		get {
+			if (_shaders == null) _shaders = Game.GetComponent<Shaders>();
+			return _shaders;
 		}
 	}
 
@@ -48,6 +57,10 @@ public class Manager {
 		}
 	}
 
+	public float GetSunAngle () {
+		return Controls.GetSunAngle();
+	}
+
 	public Vector3 GetSunDirection () {
 		return Controls.GetSunDirection();
 	}
@@ -62,10 +75,28 @@ public class Manager {
 		return direction.normalized;
 	}
 
+	//
+	public Vector3 RandomGroundPosition () {
+		return new Vector3(Random.Range(0, Game.dimension), Random.Range(0, Game.dimension), 0f);
+	}
+
+	//
+	public Vector3 RandomTopEdgePosition () {
+		return new Vector3(Random.Range(0, Game.dimension), Game.dimension, 0f);
+	}
+
 	// Random Root Direction
 	public static Vector3 GetRandomRootDirection () { 
-		Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, -0.5f), 0f);
-		return direction.normalized;
+		return (new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, -0.5f), 0f)).normalized;
+	}
+
+	// GetRandomLeafDirection
+	public Vector3 GetRandomLeafDirection () {
+		return new Vector3(0, 0, Random.Range(0f, 1f) * 90f + 45f);
+	}
+
+	public Vector3 GetTransformPosition (Vector3 position_) {
+		return (position_ / (float)(Game.dimension * 4) * Shaders.levelOfDetails);
 	}
 
 	// Material Branch
@@ -76,23 +107,4 @@ public class Manager {
 			return _materialBranch;
 		}
 	}
-
-	// SetScreenBounds
-	public void SetScreenBounds (Vector3 position) 
-	{
-		float size = Mathf.Max(Mathf.Abs(position.x), Mathf.Abs(position.y));
-		
-		if (Camera.main.orthographicSize < size) 
-		{
-			SetSizeBounds(size);
-		}
-	}
-
-	public void SetSizeBounds (float size)
-	{
-		Camera.main.orthographicSize = size;	
-		Shader.SetGlobalFloat("WorldDetails", size);
-		Game.transform.localScale = new Vector3(size * 4f, size * 4f, size * 4f);
-	}
-
 }

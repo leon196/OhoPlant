@@ -5,6 +5,7 @@ public class Shaders : MonoBehaviour
 {
 	//
 	public int levelOfDetails = 8;
+	public float detailsStep = 256;
 	public float minLight = 0.5f;
 
 	//
@@ -22,15 +23,16 @@ public class Shaders : MonoBehaviour
 		game = GetComponent<Game>();	
 		controls = GetComponent<Controls>();
 
-		Manager.Instance.SetSizeBounds(10f);
-
 		cloudRadius = renderer.material.GetFloat("_CloudRadius");
 		cloudDistance = renderer.material.GetFloat("_CloudDistance");
-		//levelOfDetails = (int)renderer.material.GetFloat("_Details");
+
+		levelOfDetails = (int)renderer.material.GetFloat("_Details");
+		detailsStep = Mathf.Pow(2f, levelOfDetails);
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+	{
 		Shader.SetGlobalFloat("WorldTime", Time.time);
 		Shader.SetGlobalFloat("WorldSpeed", game.worldSpeed);
 		Shader.SetGlobalFloat("WorldLight", Mathf.Max(minLight, game.GetEnergy()));

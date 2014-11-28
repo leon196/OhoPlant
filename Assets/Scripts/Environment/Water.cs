@@ -16,14 +16,14 @@ public class Water : MonoBehaviour
 	private Game game;
 	private Controls controls;
 	private Shaders shaders;
-	private Plant plant;
+	private Planter planter;
 
 	void Start ()
 	{
 		game = GetComponent<Game>();
 		controls = GetComponent<Controls>();	
 		shaders = GetComponent<Shaders>();
-		plant = GetComponent<Plant>();
+		planter = GetComponent<Planter>();
 
 		dimension = Manager.Instance.Game.dimension;
 		water = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
@@ -98,11 +98,11 @@ public class Water : MonoBehaviour
 				Vector3 position = droplets[i].position;
 				int x = (int)position.x;
 				int y = (int)position.y;
-				bool collision = plant.IsBranchAt(x, y) || plant.IsRootAt(x, y) || IsWaterAt(x, y);
+				//bool collision = planter.IsBranchAt(x, y) || planter.IsRootAt(x, y) || IsWaterAt(x, y);
 				bool outOfGround = position.y >= dimension || position.y < 0 || position.x < 0 || position.x >= dimension;
 
 				// Clear
-				if (collision || outOfGround)
+				if (/*collision || */outOfGround)
 				{
 					droplets[i] = null;
 					recycle.Add(i);
