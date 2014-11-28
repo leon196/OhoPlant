@@ -300,7 +300,7 @@ public class Planter : MonoBehaviour
 
 	public void SpawnRoot (Vector3 position_)
 	{
-		Debug.Log(position_);
+		//Debug.Log(position_);
 		Root newRoot = new Root(position_);
 		if (rootsRecycle.Count > 0) 
 		{
