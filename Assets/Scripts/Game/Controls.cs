@@ -65,8 +65,8 @@ public class Controls : MonoBehaviour
 		}
 
 		angleSun = inputSun * Mathf.PI;
-		angleMoon = inputMoon * Mathf.PI + angleOffset;
-		angleCloud = inputCloud * Mathf.PI + angleOffset * 2;
+		angleMoon = inputMoon * Mathf.PI;
+		angleCloud = inputCloud * Mathf.PI;
 	}
 
 	public float GetSunRatio () {

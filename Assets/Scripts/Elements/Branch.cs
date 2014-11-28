@@ -28,7 +28,7 @@ public class Branch : Element
 		length = Random.Range(1f, 2f);
 		depth = depth_;
 	}
-	
+
 	public void Grow (float energy, float sunAngle) 
 	{
 		// Check Energy
