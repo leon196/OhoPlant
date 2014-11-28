@@ -84,9 +84,9 @@
             
             // UVs
             float2 screenUV = IN.screenPos.xy / IN.screenPos.w;
-            float screenRatio = _ScreenParams.y / _ScreenParams.x;
-            screenUV.y *= screenRatio;
-            screenUV.y += (1.0 - screenRatio) / 2.0;
+            float screenRatio = _ScreenParams.x / _ScreenParams.y;
+            screenUV.x *= screenRatio;
+            screenUV.x += (1.0 - screenRatio) / 2.0;
 
             // Pixel Fake QuadTree
             float dist = distance(pixelize(screenUV, pow(2.0, floor(_DetailsUnit))), float2(0.5, 0.5));
