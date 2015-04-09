@@ -1,8 +1,8 @@
-﻿Shader "Custom/Leaf" {
+﻿Shader "Custom/Gradient" {
 	Properties {
 		_ColorA ("Color A", Color) = (1,1,1,1)
 		_ColorB ("Color B", Color) = (1,1,1,1)
-		_MainTex ("Albedo (RGB)", 2D) = "white" {}
+		_MainTex ("Base (RGB)", 2D) = "white" {}
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -21,21 +21,22 @@
 		fixed4 _ColorA;
 		fixed4 _ColorB;
 		uniform float _PlantHeight;
+		uniform float _LineDistance;
 
 		void surf (Input IN, inout SurfaceOutputStandard o) 
 		{
-			//float3 screenUV = IN.screenPos.xyz / IN.screenPos.w;
+			float3 screenUV = IN.screenPos.xyz / IN.screenPos.w;
 
-			float shadow = sin(IN.uv_MainTex.x * 3.1416) + sin(IN.uv_MainTex.y * 3.1416);
+			float height = clamp(IN.worldPos.y / _PlantHeight, 0.0, 1.0);
 
-			fixed4 color = lerp(_ColorA, _ColorB, shadow * 0.5);
+			float y = 1.0 - sin(IN.uv_MainTex.x * 3.1416 * _LineDistance);
+
+			fixed4 color = lerp(_ColorA, _ColorB, height * y);
 
 			o.Emission = color.rgb;
 			o.Alpha = color.a;
 		}
 		ENDCG
-	}
-	FallBack "Unlit/Transparent"
+	} 
+	FallBack "Diffuse"
 }
-
-
