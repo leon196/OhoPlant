@@ -23,7 +23,7 @@ public class Master
 
 	// GUI Parameters
 	private float _rootAscensionScale = 0.5f;
-	private float _lineRendererStartWidth = 0.3f;
+	private float _lineRendererStartWidth = 0.1f;
 	private float _lineRendererEndWidth = 0.1f;
 	private float _lineRendererSegmentLength = 0.2f;
 
@@ -232,6 +232,17 @@ public class Master
 				this._prefabLeaf = Resources.Load("Leaf") as GameObject;
 			}
 			return _prefabLeaf;
+		}
+	}
+
+	// Flower
+	private GameObject _prefabFlower = null;
+	public GameObject PrefabFlower {
+		get {
+			if (_prefabFlower == null) {
+				this._prefabFlower = Resources.Load("Flower") as GameObject;
+			}
+			return _prefabFlower;
 		}
 	}
 

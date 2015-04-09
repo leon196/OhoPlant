@@ -18,6 +18,8 @@ public class Root
 	int lineIndex;
 	bool _isAlive;
 
+	float randomSeed;
+
 	// Getters
 	public Vector3 Position { get { return this.linePosition; } }
 	public bool IsAlive { get { return this._isAlive; } set { this._isAlive = value; } }
@@ -50,6 +52,8 @@ public class Root
 
 		this._isAlive = true;
 
+		this.randomSeed = Random.Range(1f, 1.5f);
+
 		return this.lineObject;
 	}
 
@@ -57,7 +61,7 @@ public class Root
 	{
 		this.lineDirection.x = Mathf.Cos(this.lineAngle);
 		this.lineDirection.z = Mathf.Sin(this.lineAngle);
-		this.linePosition += this.lineDirection * speed;
+		this.linePosition += this.lineDirection * speed * this.randomSeed;
 
 		this.lineDistance += this.lineDirection.magnitude * speed;
 		this.lineSegmentDistance += this.lineDirection.magnitude * speed;

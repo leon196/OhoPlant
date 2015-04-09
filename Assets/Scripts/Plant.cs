@@ -7,6 +7,8 @@ public class Plant : MonoBehaviour
 	List<Root> _rootList;
 	public List<Root> Roots { get { return _rootList; } }
 
+	List<GameObject> _flowerList;
+
 	float _plantHeight;
 	public float Height { get { return _plantHeight; } }
 
@@ -18,6 +20,8 @@ public class Plant : MonoBehaviour
 		root.Create(new Vector3(), Master.Instance.RandomAngle());
 		this._rootList.Add(root);
 
+		this._flowerList = new List<GameObject>();
+
 		this._plantHeight = 0f;
 
 		Master.Instance.GameOver = false;
@@ -28,6 +32,10 @@ public class Plant : MonoBehaviour
 		Root root = new Root();
 		root.Create(position, Master.Instance.RandomAngle());
 		this._rootList.Add(root);
+
+		GameObject flower = GameObject.Instantiate(Master.Instance.PrefabFlower) as GameObject;
+		flower.transform.position = position;
+		this._flowerList.Add(flower);
 	}
 	
 	void Update () 
@@ -83,14 +91,21 @@ public class Plant : MonoBehaviour
 	public void Restart ()
 	{
 		Root root;
-
 		for (int i = this._rootList.Count - 1; i >= 0; --i)
 		{
 			root = this._rootList[i];
 			root.Clean();
 		}
 
+		GameObject flower;
+		for (int i = this._flowerList.Count - 1; i >= 0; --i)
+		{
+			flower = this._flowerList[i];
+			GameObject.Destroy(flower);
+		}
+
 		this._rootList.Clear();
+		this._flowerList.Clear();
 
 		root = new Root();
 		root.Create(new Vector3(), 0f);

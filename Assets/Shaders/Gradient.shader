@@ -29,9 +29,9 @@
 
 			float height = clamp(IN.worldPos.y / _PlantHeight, 0.0, 1.0);
 
-			float y = 1.0 - sin(IN.uv_MainTex.x * 3.1416 * _LineDistance);
+			//float y = 1.0 - sin(IN.uv_MainTex.x * 3.1416);
 
-			fixed4 color = lerp(_ColorA, _ColorB, height * y);
+			fixed4 color = lerp(_ColorA, _ColorB, height);
 
 			o.Emission = color.rgb;
 			o.Alpha = color.a;
