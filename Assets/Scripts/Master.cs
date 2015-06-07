@@ -18,16 +18,19 @@ public class Master
 	}
 
 	// Game Parameters
-	private float _distanceMinWithFood = 0.05f;
+	private float _globalSpeed = 0f;
+	private float _speedAcceleration = 0.05f;
+	private float _distanceMinWithFood = 0.1f;
 	private float _inputScale = 3f;
 
 	// GUI Parameters
-	private float _rootAscensionScale = 0.5f;
+	private float _rootAscensionScale = 1f;
 	private float _lineRendererStartWidth = 0.1f;
 	private float _lineRendererEndWidth = 0.1f;
 	private float _lineRendererSegmentLength = 0.2f;
 
 	// View 
+	private float _cameraOrbitRadius = 5f;
 	private float _cameraDistanceMinWithPlant = 5f;
 
 	// Logic
@@ -40,7 +43,6 @@ public class Master
 	private Vector3 _cameraGamePosition;
 	private Vector3 _cameraGameRotation;
 	private Vector3 _cameraGameOverPosition;
-	private float _cameraOrbitRadius = 10f;
 	private float _timeStartGameOver = 0f;
 	private float _timeDelayGameOverTransition = 5f;
 	private float _timeStartRestart = 0f;
@@ -65,17 +67,23 @@ public class Master
 	// Main Loop
 	public void Update ()
 	{
+		if (Arduino.Instance.Enable)
+		{
+			Arduino.Instance.Update();
+		}
+
 		// Game Overing
 		if (this._gameOver)
 		{
 			float transition = this.AnimationRatio(this._timeStartGameOver, this._timeDelayGameOverTransition);
 			float rotationAngle = Time.time * 0.2f;
 			this._cameraGameOverPosition.x = Mathf.Cos(rotationAngle) * this._cameraOrbitRadius;
+			this._cameraGameOverPosition.y = (Mathf.Cos(rotationAngle) * 0.5f + 0.5f) * this.Plant.Height + this._cameraDistanceMinWithPlant;
 			this._cameraGameOverPosition.z = Mathf.Sin(rotationAngle) * this._cameraOrbitRadius;
 
 			Vector3 position = Vector3.Lerp(this._cameraGamePosition, this._cameraGameOverPosition, transition);
 			Vector3 target = Vector3.zero;
-			target.y = this.Plant.Height * 0.5f;
+			target.y = this._cameraGameOverPosition.y * 0.5f;
 
 			this._cameraHelper.transform.position = this._cameraGameOverPosition;
 			this._cameraHelper.transform.LookAt(target);
@@ -84,8 +92,19 @@ public class Master
 			this._mainCamera.transform.position = position;
 			this._mainCamera.transform.rotation = Quaternion.Euler(rotation);
 
+			for (int f = this._foodList.Count - 1; f >= 0; --f) 
+			{
+				Food food = this._foodList[f];
+				food.Restarting(transition);
+			}	
+
 			// Restart
-			if (Input.GetKeyDown(KeyCode.R) && this._isRestarting == false && transition >= 1f)
+			bool restartInput = Input.GetKeyDown(KeyCode.R);
+			if (Arduino.Instance.Enable)
+			{
+				restartInput = Arduino.Instance.Button(1) || Arduino.Instance.Button(2) || Arduino.Instance.Button(3);
+			}
+			if (restartInput && this._isRestarting == false && transition >= 1f)
 			{
 				this._isRestarting = true;
 				this._timeStartRestart = Time.time;
@@ -118,11 +137,13 @@ public class Master
 			for (int f = this._foodList.Count - 1; f >= 0; --f) {
 				Food food = this._foodList[f];
 
+				food.Update();
+
 				// For each Root
 				for (int r = this.Plant.Roots.Count - 1; r >= 0; --r) {
 					Root root = this.Plant.Roots[r];
 
-					Vector2 rootPosition = this.MainCamera.WorldToViewportPoint(root.Position);
+					Vector2 rootPosition = this.MainCamera.WorldToViewportPoint(root.LeafPosition);
 					Vector2 foodPosition = this.FoodCamera.WorldToViewportPoint(food.Position);
 
 					// Distance Test
@@ -136,6 +157,9 @@ public class Master
 
 						// Spawn Root
 						this.Plant.SpawnRootAt(root.Position);
+
+						// Speed Up
+						this._globalSpeed += this._speedAcceleration;
 
 						break;
 					}
@@ -162,12 +186,14 @@ public class Master
 				this.Plant.Restart();
 				this._gameOver = false;
 				this._isRestarting = false;
+				this._globalSpeed = 1f;
 			}
 		}
 	}
 
 	// Getters
 	public float InputScale { get { return _inputScale; } }
+	public float GlobalSpeed { get { return _globalSpeed; } }
 
 	// GUI Getters
 	public float RootAscensionScale { get { return this._rootAscensionScale; } }

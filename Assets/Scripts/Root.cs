@@ -21,8 +21,18 @@ public class Root
 	float randomSeed;
 
 	// Getters
+	public Vector3 LeafPosition {
+		get {
+			return this.linePosition + this.lineDirection * 0.5f;
+		}
+	}
 	public Vector3 Position { get { return this.linePosition; } }
 	public bool IsAlive { get { return this._isAlive; } set { this._isAlive = value; } }
+
+	public void Randomize ()
+	{
+		this.randomSeed = Master.Instance.GlobalSpeed + Random.Range(1f, 1.5f);
+	}
 
 	public GameObject Create (Vector3 position, float angle) 
 	{
@@ -37,7 +47,7 @@ public class Root
 		this.lineDirection.y = Master.Instance.RootAscensionScale;
 		this.lineDirection.z = Mathf.Sin(this.lineAngle);
 
-		this.leafObject = GameObject.Instantiate(Master.Instance.PrefabLeaf);
+		this.leafObject = GameObject.Instantiate(Master.Instance.PrefabLeaf) as GameObject;
 		this.leafObject.transform.position = this.linePosition;
 
 		this.lineDistance = 0f;
@@ -52,7 +62,7 @@ public class Root
 
 		this._isAlive = true;
 
-		this.randomSeed = Random.Range(1f, 1.5f);
+		this.randomSeed = Master.Instance.GlobalSpeed + Random.Range(1f, 1.5f);
 
 		return this.lineObject;
 	}

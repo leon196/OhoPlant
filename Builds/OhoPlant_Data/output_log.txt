@@ -1,0 +1,22 @@
+Initialize engine version: 4.5.5f1 (7684ad0c5a44)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 4000 (ID=0x166)
+    Vendor:   Intel
+    VRAM:     64 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\OhoPlant\Builds\OhoPlant_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\OhoPlant\Builds\OhoPlant_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\OhoPlant\Builds\OhoPlant_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\OhoPlant\Builds\OhoPlant_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+- Completed reload, in  0.128 seconds
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+Platform assembly: C:\OhoPlant\Builds\OhoPlant_Data\Managed\System.dll (this message is harmless)
+WARNING: Shader Unsupported: 'Hidden/TerrainEngine/Details/BillboardWavingDoublePass' - Pass '' shader state not supported
+Detected Arduino at : COM5
+ 
+(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
+

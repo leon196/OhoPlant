@@ -6,10 +6,9 @@
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
-		LOD 200
-		
 		CGPROGRAM
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf Lambert
+		#include "UnityCG.cginc"
 
 		struct Input 
 		{
@@ -23,7 +22,7 @@
 		uniform float _PlantHeight;
 		uniform float _LineDistance;
 
-		void surf (Input IN, inout SurfaceOutputStandard o) 
+		void surf (Input IN, inout SurfaceOutput o)
 		{
 			float3 screenUV = IN.screenPos.xyz / IN.screenPos.w;
 
@@ -37,6 +36,6 @@
 			o.Alpha = color.a;
 		}
 		ENDCG
-	} 
+	}
 	FallBack "Diffuse"
 }

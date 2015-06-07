@@ -7,7 +7,7 @@ public class Plant : MonoBehaviour
 	List<Root> _rootList;
 	public List<Root> Roots { get { return _rootList; } }
 
-	List<GameObject> _flowerList;
+	List<Flower> _flowerList;
 
 	float _plantHeight;
 	public float Height { get { return _plantHeight; } }
@@ -20,7 +20,7 @@ public class Plant : MonoBehaviour
 		root.Create(new Vector3(), Master.Instance.RandomAngle());
 		this._rootList.Add(root);
 
-		this._flowerList = new List<GameObject>();
+		this._flowerList = new List<Flower>();
 
 		this._plantHeight = 0f;
 
@@ -29,12 +29,21 @@ public class Plant : MonoBehaviour
 
 	public void SpawnRootAt (Vector3 position)
 	{
-		Root root = new Root();
+		Root root;
+
+		for (int r = this._rootList.Count - 1; r >= 0; --r)
+		{
+			root = this._rootList[r];
+			root.Randomize();
+		}
+
+		root = new Root();
 		root.Create(position, Master.Instance.RandomAngle());
 		this._rootList.Add(root);
 
-		GameObject flower = GameObject.Instantiate(Master.Instance.PrefabFlower) as GameObject;
-		flower.transform.position = position;
+		GameObject flowerObject = GameObject.Instantiate(Master.Instance.PrefabFlower) as GameObject;
+		Flower flower = flowerObject.GetComponent<Flower>();
+		flower.Create(position);
 		this._flowerList.Add(flower);
 	}
 	
@@ -54,8 +63,26 @@ public class Plant : MonoBehaviour
 				{
 					// Update
 					++rootAliveCount;
-					root.Grow(Time.deltaTime);
+					root.Grow(Time.deltaTime * 0.75f);
 					float h = Input.GetAxis("Horizontal");
+
+					if (Arduino.Instance.Enable)
+					{
+						if (Arduino.Instance.Button(1))
+						{
+							h += 1f;
+						}
+						else if (Arduino.Instance.Button(3))
+						{
+							h -= 1f;
+						}
+/*
+						h -= Arduino.Instance.Spiner(1);
+						h += Arduino.Instance.Spiner(2);
+						h -= Arduino.Instance.Spiner(3);
+						*/
+					}
+
 					root.Rotate(h * Time.deltaTime * Master.Instance.InputScale);
 
 					// Out of screen
@@ -86,6 +113,11 @@ public class Plant : MonoBehaviour
 			Root root = this._rootList[i];
 			root.Restarting(ratio);
 		}
+		for (int i = this._flowerList.Count - 1; i >= 0; --i)
+		{
+			Flower flower = this._flowerList[i];
+			flower.Restarting(ratio);
+		}
 	}
 
 	public void Restart ()
@@ -97,11 +129,11 @@ public class Plant : MonoBehaviour
 			root.Clean();
 		}
 
-		GameObject flower;
+		Flower flower;
 		for (int i = this._flowerList.Count - 1; i >= 0; --i)
 		{
 			flower = this._flowerList[i];
-			GameObject.Destroy(flower);
+			flower.Clean();
 		}
 
 		this._rootList.Clear();
